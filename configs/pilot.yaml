@@ -1,0 +1,17 @@
+schema_version: 1
+status: design_not_executed
+protocol_id: paper_interpretation_clean_v1
+data_config: configs/data_hf.json
+datasets: [haberman, new_thyroid, banknote]
+strategies: [no_curriculum, ddcl_density, ddcl_point, self_paced, sp_ddcl_density, sp_ddcl_point]
+seeds: [0, 1, 2]
+device: cpu
+deterministic: true
+epochs: 5
+batch_size: 32
+drop_last: false
+optimizer: {name: adam, lr: 0.001}
+split: {train: 0.7, validation: 0.2, test: 0.1, stratify: true}
+spl: {lambda_initial: 0.4, lambda_max: 0.6, growth: 1.1, empty_easy: min_loss_batch}
+geometry: {input_space: raw_features, normalization: class_distance_l2}
+tracking: {mode: offline, tags: [pilot, not_final]}

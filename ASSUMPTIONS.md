@@ -1,0 +1,25 @@
+# Assumptions Register (Sổ ghi nhận giả định khoa học)
+
+Tài liệu này công khai toàn bộ các giả định kỹ thuật và phương pháp luận do nhóm đặt ra khi bài báo Dynamic DDCL (2025) hoặc Static DDCL (2024) không nêu rõ chi tiết triển khai. Việc công khai các giả định này giúp đảm bảo tính liêm chính khoa học, phục vụ việc phân tích độ lệch (deviation analysis) và kiểm thử độ nhạy.
+
+---
+
+| ID | Giả định / Lựa chọn kỹ thuật | Chi tiết & Biện giải | Config Field | Verification Test | Trạng thái Phase A |
+|---|---|---|---|---|---|
+| **A01** | Backend Framework PyTorch thay thế TensorFlow | Tác giả dùng TF 2.17; nhóm chọn PyTorch 2.5.1 CPU deterministic để kiểm soát minh bạch từng step gradient và scoring. | `device: cpu`, `deterministic: true` | `tests/test_doctor.py`, `00_environment.ipynb` | **FROZEN** |
+| **A02** | Phân chia Stratified 70/20/10 trước mọi fit | Tác giả nêu 70/20/10; code tác giả có thể dùng 72/20/8. Nhóm chọn 70% train, 20% validation, 10% test có phân tầng và cố định danh sách `row_id`. | `split.train=0.7`, `split.validation=0.2`, `split.test=0.1`, `split.stratify=true` | `tests/test_splits.py` (Phase B) | **FROZEN** |
+| **A03** | Tâm cụm Euclidean Mean & khoảng cách chuẩn hóa L2 | Sửa lỗi ký hiệu trong công thức (8) bài báo thành trung bình cộng $\mu_s = \frac{1}{|s|}\sum x$. Chuẩn hóa khoảng cách chia cho $L_2$ norm của vector khoảng cách theo lớp: $\hat{r}_i = \frac{r_i}{\sqrt{\sum r_j^2}}$. | `geometry.input_space=raw_features`, `geometry.normalization=class_distance_l2` | `tests/test_curriculum.py` (Phase C) | **FROZEN** |
+| **A04** | Phân chia Quantile bằng mức mật độ KDE (`kde_level_partition_v1`) | Bài báo không mô tả hàm quantile. Nhóm thiết kế thuật toán cắt mức mật độ ngang trên lưới KDE đều, tìm giao điểm để định biên bin. Không dùng `pd.qcut` gượng ép. | `curriculum.partition_policy=kde_level_partition_v1`, `curriculum.bandwidth=scott` | `tests/test_curriculum.py` (Phase C) | **FROZEN** |
+| **A05** | Chính sách gom cụm (Bin Pooling) & SMOTE nội bộ | Gom các bin cùng chỉ số giữa các lớp (`pool_by_local_bin_index_v1`). SMOTE chỉ thực hiện trong các bin gộp có $\ge 2$ lớp và đủ láng giềng $k \ge 3$, chỉ áp dụng trên train. Tạo mẫu nhân tạo mang ID `synth_...`. | `curriculum.smote_policy=within_bin_minority_v1` (kèm ablation `none`) | `tests/test_resample.py` (Phase C) | **FROZEN** |
+| **A06** | Cập nhật ngưỡng $\lambda$ và cơ chế Fallback khi Easy rỗng | Cập nhật $\lambda$ mỗi epoch theo $\lambda_{e+1} = \min(0.6, \lambda_e \times 1.1)$. Nếu ở epoch đầu chưa có batch nào có loss $< \lambda$, thuật toán chọn 1 batch có loss nhỏ nhất để tiếp tục học. | `spl.lambda_initial=0.4`, `spl.lambda_max=0.6`, `spl.growth=1.1`, `spl.empty_easy=min_loss_batch` | `tests/test_pace.py` (Phase C/D) | **FROZEN** |
+| **A07** | Thực thi vòng lặp Algorithm 2 (`replay_easy_then_union_v1`) | Đánh giá loss ở chế độ `eval` không gradient. Huấn luyện easy batches. Nếu mean loss của easy $< \lambda$, tiếp tục huấn luyện tập gộp (easy + hard). Cung cấp nhánh ablation `hard_only_second_pass`. | `spl.loop_policy=replay_easy_then_union_v1` | `tests/test_loop.py` (Phase D) | **FROZEN** |
+| **A08** | Giữ lại batch cuối (`drop_last = false`) | Để tránh loại bỏ mẫu trong các tập dữ liệu nhỏ (ví dụ New-Thyroid chỉ có ~150 mẫu train), nhóm giữ nguyên batch dư cuối cùng và tính trung bình có trọng số. | `drop_last=false` | `tests/test_loop.py` (Phase D) | **FROZEN** |
+| **A09** | Xử lý hòa phiếu Ensemble bằng Prior huấn luyện | Khi 6 mô hình hòa 3-3 ở bài toán nhị phân, chọn lớp có tần suất xuất hiện cao hơn trong tập train; nếu vẫn hòa, chọn nhãn có index nhỏ hơn. Báo cáo tỷ lệ hòa phiếu. | `ensemble.tie_break=train_prior_then_lowest_index` | `tests/test_ensemble.py` (Phase E) | **FROZEN** |
+| **A10** | Chuẩn hóa đặc trưng & Không gian hình học | StandardScaler chỉ fit trên tập train. Không gian tính tâm cụm và khoảng cách DDCL mặc định trên `raw_features` (theo thứ tự mô tả bài báo); thêm `standardized_features` làm ablation. | `preprocess.scaler=standard_scaler_train_only`, `geometry.input_space=raw_features` | `tests/test_preprocess.py` (Phase B/C) | **FROZEN** |
+| **A11** | Phạm vi thực nghiệm cốt lõi (Core Scope: 3 tập Pilot) | Tập trung vào 3 tập dữ liệu đã kiểm chứng nguồn gốc UCI và cấu trúc: Haberman, New-Thyroid, Banknote. Bao gồm R1 (6 strategies), R2 (Ensemble), R3 (độ nhạy batch/$\lambda$). Mở rộng nếu tài nguyên cho phép. | `datasets=[haberman, new_thyroid, banknote]` | Báo cáo W&B và bảng đối chiếu | **FROZEN** |
+| **A12** | Cấu hình MLP Backbone cố định cho Pilot | Dùng mạng MLP với tham số rõ ràng (`pilot_fixed_backbone`) trước khi cân nhắc tối ưu Bayesian (do bài báo không công bố search space/trials của Bayesian optimization). | `model.backbone=pilot_fixed_backbone` | Run report & config serialization | **FROZEN** |
+
+---
+
+> [!NOTE]
+> Mọi thay đổi đối với danh sách giả định sau khi Phase A kết thúc sẽ yêu cầu tạo phiên bản protocol mới (ví dụ `paper_interpretation_clean_v2`) và chạy lại toàn bộ các thực nghiệm bị ảnh hưởng.

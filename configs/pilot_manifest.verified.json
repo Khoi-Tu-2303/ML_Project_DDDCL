@@ -1,0 +1,99 @@
+{
+  "datasets": {
+    "banknote": {
+      "class_counts": {
+        "0": 762,
+        "1": 610
+      },
+      "feature_columns": [
+        "variance",
+        "skewness",
+        "curtosis",
+        "entropy"
+      ],
+      "filename": "data/banknote.csv",
+      "label_column": "label",
+      "label_mapping": {
+        "0": 0,
+        "1": 1
+      },
+      "label_meanings": {
+        "0": "raw_class_0",
+        "1": "raw_class_1"
+      },
+      "license": "CC-BY-4.0",
+      "n_rows": 1372,
+      "provenance_file": "provenance/banknote.json",
+      "row_id_column": "row_id",
+      "sha256": "6620d5542ae0118591bfcb53bdf4620132623439daf1df013b5d7f6cd96e3a38",
+      "source_sha256": "1e2acd9a2085fadf3d8145c12d3d22af853320d52294a6590c2eaf75fdc05227",
+      "source_url": "https://archive.ics.uci.edu/static/public/267/banknote+authentication.zip",
+      "status": "verified_primary_source"
+    },
+    "haberman": {
+      "class_counts": {
+        "0": 225,
+        "1": 81
+      },
+      "feature_columns": [
+        "age",
+        "operation_year",
+        "positive_axillary_nodes"
+      ],
+      "filename": "data/haberman.csv",
+      "label_column": "label",
+      "label_mapping": {
+        "1": 0,
+        "2": 1
+      },
+      "label_meanings": {
+        "0": "survived_5_years_or_longer",
+        "1": "died_within_5_years"
+      },
+      "license": "CC-BY-4.0",
+      "n_rows": 306,
+      "provenance_file": "provenance/haberman.json",
+      "row_id_column": "row_id",
+      "sha256": "624ce59d56ad70923ddafcfbd074dfd7c546da230acaa6a555235fcfdeafe037",
+      "source_sha256": "1001bac29022350e279b064003c426c8ed60f4d76ab4916fb05baf886c8e3ac7",
+      "source_url": "https://archive.ics.uci.edu/static/public/43/haberman+s+survival.zip",
+      "status": "verified_primary_source"
+    },
+    "new_thyroid": {
+      "class_counts": {
+        "0": 150,
+        "1": 35,
+        "2": 30
+      },
+      "feature_columns": [
+        "feature_1",
+        "feature_2",
+        "feature_3",
+        "feature_4",
+        "feature_5"
+      ],
+      "filename": "data/new_thyroid.csv",
+      "label_column": "label",
+      "label_mapping": {
+        "1": 0,
+        "2": 1,
+        "3": 2
+      },
+      "label_meanings": {
+        "0": "raw_class_1",
+        "1": "raw_class_2",
+        "2": "raw_class_3"
+      },
+      "license": "CC-BY-4.0",
+      "n_rows": 215,
+      "provenance_file": "provenance/new_thyroid.json",
+      "row_id_column": "row_id",
+      "sha256": "7074a5fe17eb42dd6b70acc7df4b090ef73154cfbbf4921f9ac12096bb01917f",
+      "source_sha256": "a0982569a7442c03a20815db58f271245e7a111b10ac46f6c6b5fa6feee4c1f4",
+      "source_url": "https://archive.ics.uci.edu/static/public/102/thyroid+disease.zip",
+      "status": "verified_primary_source"
+    }
+  },
+  "release_name": "dynamic-ddcl-pilot-v1",
+  "schema_version": 1
+}

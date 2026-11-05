@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "repo_id": "YOUR_HF_USERNAME/dynamic-ddcl-benchmarks",
+  "revision": "SET_FULL_HF_COMMIT_SHA_AFTER_UPLOAD",
+  "manifest_filename": "manifest.json",
+  "manifest_sha256": "SET_LOCAL_MANIFEST_SHA256_AFTER_BUILD",
+  "cache_dir": ".cache/huggingface"
+}

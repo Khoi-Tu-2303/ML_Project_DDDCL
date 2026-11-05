@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dddcl"
+version = "0.1.0"
+description = "Triển khai độc lập Dynamic Data Distribution-based Curriculum Learning (DDDCL)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26.4",
+    "scipy>=1.13.1",
+    "pandas>=2.2.2",
+    "scikit-learn>=1.5.1",
+    "imbalanced-learn>=0.12.3",
+    "torch>=2.5.1",
+    "matplotlib>=3.9.2",
+    "seaborn>=0.13.2",
+    "huggingface-hub>=0.26.2",
+    "wandb>=0.18.7",
+    "PyYAML>=6.0.2",
+    "python-dotenv>=1.0.1",
+]
+
+[project.scripts]
+dddcl = "dddcl.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

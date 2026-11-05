@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "repo_id": "KieranTuVanKhoi/dynamic-ddcl-benchmarks",
+  "revision": "140c06864683d8c20a9cc2441a90a3d89099759a",
+  "manifest_filename": "manifest.json",
+  "manifest_sha256": "df313412d044bd9db651c9b07f8ea14a27a76b2036a6afb6516cc87cb4f80851",
+  "cache_dir": ".cache/huggingface"
+}

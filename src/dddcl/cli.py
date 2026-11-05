@@ -1,6 +1,6 @@
 """
 DDDCL Command Line Interface.
-Entrypoints for doctor, data checks, running experiments, and reporting.
+Entrypoints for doctor, data checks, dataset splits, running experiments, and reporting.
 """
 
 from __future__ import annotations
@@ -12,7 +12,9 @@ import platform
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 
 def get_project_root() -> Path:
@@ -198,6 +200,132 @@ def run_doctor(output_json: Path | None = None) -> int:
     return 0 if report["status"] == "PASS" else 1
 
 
+def run_data_check(
+    config_path: Optional[Path] = None,
+    release_dir: Optional[Path] = None,
+    dataset: Optional[str] = None
+) -> int:
+    """
+    Phase B Data Check:
+    Verifies dataset integrity, checksums, schema, finite features, and class distribution.
+    Can verify via hosted HF config OR local release directory.
+    """
+    from dddcl.data.hf import load_dataset_from_release, load_dataset_from_hf
+
+    print("=" * 60)
+    print("DDDCL Data Check (Phase B Verification)")
+    print("=" * 60)
+
+    datasets_to_check = [dataset] if dataset and dataset != "all" else ["haberman", "new_thyroid", "banknote"]
+    all_ok = True
+
+    # If config_path provided and valid, try HF loading
+    use_hf = False
+    if config_path and config_path.exists():
+        try:
+            with open(config_path, encoding="utf-8") as f:
+                c = json.load(f)
+            if "YOUR_" not in c.get("repo_id", "") and c.get("revision"):
+                use_hf = True
+                print(f"[*] Checking via hosted Hugging Face config: {config_path}")
+        except Exception:
+            use_hf = False
+
+    if not use_hf:
+        rel_dir = release_dir or Path("hf_release")
+        print(f"[*] Checking local release directory: {rel_dir}")
+        if not rel_dir.exists():
+            print(f"[-] Release directory '{rel_dir}' not found.")
+            return 1
+
+    for ds_id in datasets_to_check:
+        try:
+            if use_hf and config_path:
+                bundle = load_dataset_from_hf(config_path, ds_id)
+                mode_str = "HOSTED HF"
+            else:
+                rel_dir = release_dir or Path("hf_release")
+                bundle = load_dataset_from_release(rel_dir, ds_id)
+                mode_str = "LOCAL RELEASE"
+
+            print(f"\n[+] Dataset: {bundle.dataset_id} ({mode_str})")
+            print(f"    - Rows (N): {len(bundle.frame)}")
+            print(f"    - Features (d): {len(bundle.feature_columns)} {bundle.feature_columns}")
+            print(f"    - Classes (C): {bundle.n_classes}")
+            counts = bundle.y.value_counts().to_dict()
+            print(f"    - Class distribution: {counts}")
+            print(f"    - Manifest SHA-256: {bundle.manifest_hash[:16]}...")
+            print(f"    - Status: VERIFIED OK")
+        except Exception as e:
+            print(f"\n[-] Dataset: {ds_id} FAILED: {e}")
+            all_ok = False
+
+    print("\n" + "=" * 60)
+    if all_ok:
+        print("[+] DATA CHECK STATUS: ALL DATASETS VERIFIED")
+        return 0
+    else:
+        print("[-] DATA CHECK STATUS: FAILED DATASETS DETECTED")
+        return 1
+
+
+def run_make_splits(
+    config_path: Path,
+    release_dir: Optional[Path] = None,
+    out_dir: Path = Path("outputs/splits")
+) -> int:
+    """
+    Phase B Split Generation:
+    Generates deterministic stratified 70/20/10 splits for all datasets and seeds in config.
+    """
+    from dddcl.data.hf import load_dataset_from_release, load_dataset_from_hf
+    from dddcl.data.splits import create_stratified_split, save_split
+
+    print("=" * 60)
+    print("DDDCL Split Generation (Phase B Protocol)")
+    print("=" * 60)
+
+    if not config_path.exists():
+        print(f"[-] Experiment config not found: {config_path}")
+        return 1
+
+    with open(config_path, encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+
+    protocol_id = cfg.get("protocol_id", "paper_interpretation_clean_v1")
+    datasets = cfg.get("datasets", ["haberman", "new_thyroid", "banknote"])
+    seeds = cfg.get("seeds", [0, 1, 2])
+    rel_dir = release_dir or Path("hf_release")
+
+    print(f"[*] Protocol: {protocol_id}")
+    print(f"[*] Datasets: {datasets}")
+    print(f"[*] Seeds: {seeds}")
+    print(f"[*] Target directory: {out_dir}\n")
+
+    total_splits = 0
+    for ds_id in datasets:
+        try:
+            bundle = load_dataset_from_release(rel_dir, ds_id)
+            print(f"[*] Processing {ds_id} (N={len(bundle.frame)}, C={bundle.n_classes}):")
+            for seed in seeds:
+                split = create_stratified_split(bundle, seed=seed, protocol_id=protocol_id)
+                saved_path = save_split(split, out_dir=out_dir)
+                n_train = len(split.train_ids)
+                n_val = len(split.validation_ids)
+                n_test = len(split.test_ids)
+                total = n_train + n_val + n_test
+                print(f"    [+] Seed {seed:2d}: Train={n_train} ({n_train/total:.1%}), Val={n_val} ({n_val/total:.1%}), Test={n_test} ({n_test/total:.1%}) -> {saved_path.name}")
+                total_splits += 1
+        except Exception as e:
+            print(f"    [-] Failed for dataset '{ds_id}': {e}")
+            return 1
+
+    print("\n" + "=" * 60)
+    print(f"[+] MAKE-SPLITS STATUS: {total_splits} SPLIT FILES SUCCESSFULLY GENERATED")
+    print("=" * 60)
+    return 0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="DDDCL Project Command Line Interface")
     subparsers = parser.add_subparsers(dest="command", help="Sub-commands")
@@ -206,13 +334,17 @@ def main() -> None:
     doctor_parser = subparsers.add_parser("doctor", help="Inspect and verify local environment")
     doctor_parser.add_argument("--json-out", type=Path, default=None, help="Save doctor report to JSON")
 
-    # data-check placeholder contract
+    # data-check
     data_check_parser = subparsers.add_parser("data-check", help="Verify hosted or local dataset release")
-    data_check_parser.add_argument("--config", type=Path, required=True, help="Path to data config JSON")
+    data_check_parser.add_argument("--config", type=Path, default=None, help="Path to data config JSON (e.g. configs/data_hf.json)")
+    data_check_parser.add_argument("--release-dir", type=Path, default=Path("hf_release"), help="Path to local release directory")
+    data_check_parser.add_argument("--dataset", type=str, default="all", help="Dataset ID or 'all'")
 
-    # make-splits placeholder contract
+    # make-splits
     splits_parser = subparsers.add_parser("make-splits", help="Generate and save split files")
     splits_parser.add_argument("--config", type=Path, required=True, help="Path to experiment config YAML")
+    splits_parser.add_argument("--release-dir", type=Path, default=Path("hf_release"), help="Path to local release directory")
+    splits_parser.add_argument("--out", type=Path, default=Path("outputs/splits"), help="Output directory for splits")
 
     # run placeholder contract
     run_parser = subparsers.add_parser("run", help="Run experiments")
@@ -229,8 +361,12 @@ def main() -> None:
 
     if args.command == "doctor":
         sys.exit(run_doctor(output_json=args.json_out))
-    elif args.command in ["data-check", "make-splits", "run", "report"]:
-        print(f"[!] Command '{args.command}' is defined in architecture spec and will be implemented in subsequent phases (B/C/D).")
+    elif args.command == "data-check":
+        sys.exit(run_data_check(config_path=args.config, release_dir=args.release_dir, dataset=args.dataset))
+    elif args.command == "make-splits":
+        sys.exit(run_make_splits(config_path=args.config, release_dir=args.release_dir, out_dir=args.out))
+    elif args.command in ["run", "report"]:
+        print(f"[!] Command '{args.command}' is defined in architecture spec and will be implemented in subsequent phases (C/D/E).")
         sys.exit(0)
     else:
         parser.print_help()
@@ -239,4 +375,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -10,7 +10,7 @@ dist/
 .env.*
 !.env.example
 .cache/
-data/
+/data/
 hf_release/
 outputs/
 wandb/

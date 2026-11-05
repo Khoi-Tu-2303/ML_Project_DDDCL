@@ -326,6 +326,39 @@ def run_make_splits(
     return 0
 
 
+def run_experiments_cli(config_path: Path, dry_run: bool = False, resume: bool = False) -> int:
+    """Execute experiment runner via CLI."""
+    from .runner import dry_run_matrix, run_experiment_matrix
+
+    if dry_run:
+        plan = dry_run_matrix(config_path)
+        print("=" * 60)
+        print("DDDCL Experiment Matrix Inspection (--dry-run)")
+        print("=" * 60)
+        print(f"[*] Config file : {plan['config_file']}")
+        print(f"[*] Protocol    : {plan['protocol_id']}")
+        print(f"[*] Datasets    : {plan['datasets']} ({len(plan['datasets'])} total)")
+        print(f"[*] Strategies  : {plan['strategies']} ({len(plan['strategies'])} total)")
+        print(f"[*] Seeds       : {plan['seeds']} ({len(plan['seeds'])} total)")
+        print(f"[*] Epochs      : {plan['epochs']}")
+        print(f"[*] Total fits  : {plan['total_fits']}")
+        print(f"[*] Completed   : {plan['completed_fits']} / {plan['total_fits']}")
+        print("\nRuns breakdown:")
+        for r in plan["runs"]:
+            st = "[DONE]" if r["completed"] else "[PENDING]"
+            print(f"  {st} {r['run_id']:<35} (Dataset: {r['dataset']}, Strategy: {r['strategy']}, Seed: {r['seed']})")
+        print("\n[+] DRY-RUN CHECK COMPLETE (No models trained, no state modified)")
+        return 0
+
+    print("=" * 60)
+    print(f"DDDCL Training Execution (resume={resume})")
+    print("=" * 60)
+    print(f"[*] Config file: {config_path}")
+    matrix_res = run_experiment_matrix(config_path, dry_run=False, resume=resume)
+    print(f"\n[+] Executed {matrix_res['total_runs']} runs successfully.")
+    return 0
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="DDDCL Project Command Line Interface")
     subparsers = parser.add_subparsers(dest="command", help="Sub-commands")
@@ -365,8 +398,10 @@ def main() -> None:
         sys.exit(run_data_check(config_path=args.config, release_dir=args.release_dir, dataset=args.dataset))
     elif args.command == "make-splits":
         sys.exit(run_make_splits(config_path=args.config, release_dir=args.release_dir, out_dir=args.out))
-    elif args.command in ["run", "report"]:
-        print(f"[!] Command '{args.command}' is defined in architecture spec and will be implemented in subsequent phases (C/D/E).")
+    elif args.command == "run":
+        sys.exit(run_experiments_cli(config_path=args.config, dry_run=args.dry_run, resume=args.resume))
+    elif args.command == "report":
+        print(f"[!] Command '{args.command}' is defined in architecture spec and will be implemented in subsequent phase E/H.")
         sys.exit(0)
     else:
         parser.print_help()

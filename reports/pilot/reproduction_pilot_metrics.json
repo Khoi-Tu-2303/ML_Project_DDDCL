@@ -14,8 +14,8 @@
       "avg_optimizer_steps": 35.0,
       "avg_sample_exposures": 1065.0,
       "avg_wall_time_sec": 0.243,
-      "paper_reported_pct": 73.55,
-      "delta_vs_paper_pct": -1.51
+      "paper_reported_pct": 65.833,
+      "delta_vs_paper_pp": 6.21
     },
     {
       "dataset_id": "haberman",
@@ -29,8 +29,8 @@
       "avg_optimizer_steps": 35.0,
       "avg_sample_exposures": 1065.0,
       "avg_wall_time_sec": 0.181,
-      "paper_reported_pct": 73.87,
-      "delta_vs_paper_pct": 0.32
+      "paper_reported_pct": 69.167,
+      "delta_vs_paper_pp": 5.03
     },
     {
       "dataset_id": "haberman",
@@ -44,8 +44,8 @@
       "avg_optimizer_steps": 35.0,
       "avg_sample_exposures": 1065.0,
       "avg_wall_time_sec": 0.256,
-      "paper_reported_pct": 74.19,
-      "delta_vs_paper_pct": -2.15
+      "paper_reported_pct": 67.222,
+      "delta_vs_paper_pp": 4.82
     },
     {
       "dataset_id": "haberman",
@@ -59,8 +59,8 @@
       "avg_optimizer_steps": 17.7,
       "avg_sample_exposures": 528.7,
       "avg_wall_time_sec": 0.172,
-      "paper_reported_pct": 73.87,
-      "delta_vs_paper_pct": -3.98
+      "paper_reported_pct": 64.861,
+      "delta_vs_paper_pp": 5.03
     },
     {
       "dataset_id": "haberman",
@@ -74,8 +74,8 @@
       "avg_optimizer_steps": 32.0,
       "avg_sample_exposures": 991.0,
       "avg_wall_time_sec": 0.192,
-      "paper_reported_pct": 74.52,
-      "delta_vs_paper_pct": -3.55
+      "paper_reported_pct": 69.028,
+      "delta_vs_paper_pp": 1.94
     },
     {
       "dataset_id": "haberman",
@@ -89,8 +89,8 @@
       "avg_optimizer_steps": 33.3,
       "avg_sample_exposures": 1033.7,
       "avg_wall_time_sec": 0.159,
-      "paper_reported_pct": 74.84,
-      "delta_vs_paper_pct": -3.87
+      "paper_reported_pct": 68.056,
+      "delta_vs_paper_pp": 2.91
     },
     {
       "dataset_id": "new_thyroid",
@@ -104,8 +104,8 @@
       "avg_optimizer_steps": 25.0,
       "avg_sample_exposures": 750.0,
       "avg_wall_time_sec": 0.117,
-      "paper_reported_pct": 95.35,
-      "delta_vs_paper_pct": -8.99
+      "paper_reported_pct": 93.137,
+      "delta_vs_paper_pp": -6.77
     },
     {
       "dataset_id": "new_thyroid",
@@ -119,8 +119,8 @@
       "avg_optimizer_steps": 25.0,
       "avg_sample_exposures": 750.0,
       "avg_wall_time_sec": 0.258,
-      "paper_reported_pct": 95.81,
-      "delta_vs_paper_pct": -7.93
+      "paper_reported_pct": 95.49,
+      "delta_vs_paper_pp": -7.61
     },
     {
       "dataset_id": "new_thyroid",
@@ -134,8 +134,8 @@
       "avg_optimizer_steps": 25.0,
       "avg_sample_exposures": 750.0,
       "avg_wall_time_sec": 0.133,
-      "paper_reported_pct": 96.28,
-      "delta_vs_paper_pct": -12.95
+      "paper_reported_pct": 94.118,
+      "delta_vs_paper_pp": -10.78
     },
     {
       "dataset_id": "new_thyroid",
@@ -149,8 +149,8 @@
       "avg_optimizer_steps": 5.0,
       "avg_sample_exposures": 136.7,
       "avg_wall_time_sec": 0.169,
-      "paper_reported_pct": 95.81,
-      "delta_vs_paper_pct": -57.93
+      "paper_reported_pct": 94.902,
+      "delta_vs_paper_pp": -57.02
     },
     {
       "dataset_id": "new_thyroid",
@@ -164,8 +164,8 @@
       "avg_optimizer_steps": 5.0,
       "avg_sample_exposures": 160.0,
       "avg_wall_time_sec": 0.102,
-      "paper_reported_pct": 96.74,
-      "delta_vs_paper_pct": -55.83
+      "paper_reported_pct": 96.078,
+      "delta_vs_paper_pp": -55.17
     },
     {
       "dataset_id": "new_thyroid",
@@ -179,8 +179,8 @@
       "avg_optimizer_steps": 5.0,
       "avg_sample_exposures": 160.0,
       "avg_wall_time_sec": 0.11,
-      "paper_reported_pct": 97.21,
-      "delta_vs_paper_pct": -59.33
+      "paper_reported_pct": 93.725,
+      "delta_vs_paper_pp": -55.85
     },
     {
       "dataset_id": "banknote",
@@ -194,8 +194,8 @@
       "avg_optimizer_steps": 150.0,
       "avg_sample_exposures": 4795.0,
       "avg_wall_time_sec": 0.348,
-      "paper_reported_pct": 99.27,
-      "delta_vs_paper_pct": -0.48
+      "paper_reported_pct": 99.879,
+      "delta_vs_paper_pp": -1.09
     },
     {
       "dataset_id": "banknote",
@@ -209,8 +209,8 @@
       "avg_optimizer_steps": 150.0,
       "avg_sample_exposures": 4795.0,
       "avg_wall_time_sec": 0.382,
-      "paper_reported_pct": 99.49,
-      "delta_vs_paper_pct": -1.18
+      "paper_reported_pct": 99.913,
+      "delta_vs_paper_pp": -1.6
     },
     {
       "dataset_id": "banknote",
@@ -224,8 +224,8 @@
       "avg_optimizer_steps": 150.0,
       "avg_sample_exposures": 4795.0,
       "avg_wall_time_sec": 0.319,
-      "paper_reported_pct": 99.64,
-      "delta_vs_paper_pct": -1.09
+      "paper_reported_pct": 99.942,
+      "delta_vs_paper_pp": -1.39
     },
     {
       "dataset_id": "banknote",
@@ -239,8 +239,8 @@
       "avg_optimizer_steps": 94.3,
       "avg_sample_exposures": 3015.7,
       "avg_wall_time_sec": 0.322,
-      "paper_reported_pct": 99.42,
-      "delta_vs_paper_pct": -1.59
+      "paper_reported_pct": 99.939,
+      "delta_vs_paper_pp": -2.11
     },
     {
       "dataset_id": "banknote",
@@ -254,8 +254,8 @@
       "avg_optimizer_steps": 260.3,
       "avg_sample_exposures": 8322.3,
       "avg_wall_time_sec": 0.7,
-      "paper_reported_pct": 99.78,
-      "delta_vs_paper_pct": -0.99
+      "paper_reported_pct": 99.884,
+      "delta_vs_paper_pp": -1.09
     },
     {
       "dataset_id": "banknote",
@@ -269,11 +269,11 @@
       "avg_optimizer_steps": 153.0,
       "avg_sample_exposures": 4888.7,
       "avg_wall_time_sec": 0.602,
-      "paper_reported_pct": 99.85,
-      "delta_vs_paper_pct": -1.54
+      "paper_reported_pct": 99.884,
+      "delta_vs_paper_pp": -1.57
     }
   ],
-  "r2_ensemble_comparison": [
+  "r2_ensemble_200_comparison": [
     {
       "dataset_id": "haberman",
       "ensemble_type": "DDCL-6 Strategy Ensemble",
@@ -284,8 +284,8 @@
       "std_macro_f1": 4.89,
       "avg_tie_count": 0.3,
       "avg_pairwise_disagreement": 0.0688,
-      "paper_reported_pct": 75.81,
-      "delta_vs_paper_pct": -4.84
+      "paper_reported_pct": "N/A (Paper Table 3 uses 600ep)",
+      "delta_vs_paper_pp": "N/A"
     },
     {
       "dataset_id": "haberman",
@@ -297,8 +297,8 @@
       "std_macro_f1": 15.52,
       "avg_tie_count": 2.0,
       "avg_pairwise_disagreement": 0.0645,
-      "paper_reported_pct": "N/A (Team Extension)",
-      "delta_vs_paper_pct": "N/A"
+      "paper_reported_pct": "N/A (Paper Table 3 uses 600ep)",
+      "delta_vs_paper_pp": "N/A"
     },
     {
       "dataset_id": "haberman",
@@ -310,8 +310,8 @@
       "std_macro_f1": 14.28,
       "avg_tie_count": 0.3,
       "avg_pairwise_disagreement": 0.0416,
-      "paper_reported_pct": "N/A (Team Extension)",
-      "delta_vs_paper_pct": "N/A"
+      "paper_reported_pct": "N/A (Paper Table 3 uses 600ep)",
+      "delta_vs_paper_pp": "N/A"
     },
     {
       "dataset_id": "new_thyroid",
@@ -323,8 +323,8 @@
       "std_macro_f1": 31.88,
       "avg_tie_count": 9.7,
       "avg_pairwise_disagreement": 0.3465,
-      "paper_reported_pct": 97.67,
-      "delta_vs_paper_pct": -21.91
+      "paper_reported_pct": "N/A (Paper Table 3 uses 600ep)",
+      "delta_vs_paper_pp": "N/A"
     },
     {
       "dataset_id": "new_thyroid",
@@ -336,8 +336,8 @@
       "std_macro_f1": 8.49,
       "avg_tie_count": 2.3,
       "avg_pairwise_disagreement": 0.1061,
-      "paper_reported_pct": "N/A (Team Extension)",
-      "delta_vs_paper_pct": "N/A"
+      "paper_reported_pct": "N/A (Paper Table 3 uses 600ep)",
+      "delta_vs_paper_pp": "N/A"
     },
     {
       "dataset_id": "new_thyroid",
@@ -349,8 +349,8 @@
       "std_macro_f1": 8.49,
       "avg_tie_count": 0.3,
       "avg_pairwise_disagreement": 0.1384,
-      "paper_reported_pct": "N/A (Team Extension)",
-      "delta_vs_paper_pct": "N/A"
+      "paper_reported_pct": "N/A (Paper Table 3 uses 600ep)",
+      "delta_vs_paper_pp": "N/A"
     },
     {
       "dataset_id": "banknote",
@@ -362,8 +362,8 @@
       "std_macro_f1": 1.52,
       "avg_tie_count": 0.3,
       "avg_pairwise_disagreement": 0.0063,
-      "paper_reported_pct": "N/A (Team Extension)",
-      "delta_vs_paper_pct": "N/A"
+      "paper_reported_pct": "N/A (Paper Table 3 uses 600ep)",
+      "delta_vs_paper_pp": "N/A"
     },
     {
       "dataset_id": "banknote",
@@ -375,8 +375,8 @@
       "std_macro_f1": 0.0,
       "avg_tie_count": 1.7,
       "avg_pairwise_disagreement": 0.0121,
-      "paper_reported_pct": "N/A (Team Extension)",
-      "delta_vs_paper_pct": "N/A"
+      "paper_reported_pct": "N/A (Paper Table 3 uses 600ep)",
+      "delta_vs_paper_pp": "N/A"
     },
     {
       "dataset_id": "banknote",
@@ -388,10 +388,11 @@
       "std_macro_f1": 1.12,
       "avg_tie_count": 0.0,
       "avg_pairwise_disagreement": 0.0037,
-      "paper_reported_pct": "N/A (Team Extension)",
-      "delta_vs_paper_pct": "N/A"
+      "paper_reported_pct": "N/A (Paper Table 3 uses 600ep)",
+      "delta_vs_paper_pp": "N/A"
     }
   ],
+  "r2_ensemble_600_comparison": [],
   "r3_sensitivity_analysis": [
     {
       "dataset_id": "haberman",
@@ -463,53 +464,71 @@
   "paper_reference_benchmarks": {
     "haberman": {
       "r1_single": {
-        "no_curriculum": 73.55,
-        "ddcl_density": 73.87,
-        "ddcl_point": 74.19,
-        "self_paced": 73.87,
-        "sp_ddcl_density": 74.52,
-        "sp_ddcl_point": 74.84,
-        "source": "Paper Table 1 / Table 2 (MLP single models, 200 epochs)"
+        "no_curriculum": 65.833,
+        "ddcl_density": 69.167,
+        "ddcl_point": 67.222,
+        "self_paced": 64.861,
+        "sp_ddcl_density": 69.028,
+        "sp_ddcl_point": 68.056,
+        "source": "dynamic-ddcl.pdf Table 1 (p. 8, row 'Haberman\\'s Survival', 200 epochs, 30 runs)"
       },
-      "r2_ensemble": {
-        "standard_paper_baseline": 74.19,
-        "ddcl_6strategy": 75.81,
+      "r2_ensemble_600": {
+        "standard_nn_svm": 90.323,
+        "ddcl_6strategy": 96.774,
         "controlled_6nn": null,
-        "source": "Paper Table 3 (Ensemble comparisons, 600 epochs/member)"
+        "source": "dynamic-ddcl.pdf Table 3 (p. 9, row 'Haberman\\'s Survival', 600 epochs/member, 30 runs)"
+      },
+      "r2_ensemble_200": {
+        "standard_nn_svm": null,
+        "ddcl_6strategy": null,
+        "controlled_6nn": null,
+        "source": "Team intermediate evaluation (200 epochs/member, 30 runs)"
       }
     },
     "new_thyroid": {
       "r1_single": {
-        "no_curriculum": 95.35,
-        "ddcl_density": 95.81,
-        "ddcl_point": 96.28,
-        "self_paced": 95.81,
-        "sp_ddcl_density": 96.74,
-        "sp_ddcl_point": 97.21,
-        "source": "Paper Table 1 / Table 2 (MLP single models, 200 epochs)"
+        "no_curriculum": 93.137,
+        "ddcl_density": 95.49,
+        "ddcl_point": 94.118,
+        "self_paced": 94.902,
+        "sp_ddcl_density": 96.078,
+        "sp_ddcl_point": 93.725,
+        "source": "dynamic-ddcl.pdf Table 1 (p. 8, row 'New-Thyroid', 200 epochs, 30 runs)"
       },
-      "r2_ensemble": {
-        "standard_paper_baseline": 96.28,
-        "ddcl_6strategy": 97.67,
+      "r2_ensemble_600": {
+        "standard_nn_svm": 95.455,
+        "ddcl_6strategy": 100.0,
         "controlled_6nn": null,
-        "source": "Paper Table 3 (Ensemble comparisons, 600 epochs/member)"
+        "source": "dynamic-ddcl.pdf Table 3 (p. 9, row 'New-Thyroid', 600 epochs/member, 30 runs)"
+      },
+      "r2_ensemble_200": {
+        "standard_nn_svm": null,
+        "ddcl_6strategy": null,
+        "controlled_6nn": null,
+        "source": "Team intermediate evaluation (200 epochs/member, 30 runs)"
       }
     },
     "banknote": {
       "r1_single": {
-        "no_curriculum": 99.27,
-        "ddcl_density": 99.49,
-        "ddcl_point": 99.64,
-        "self_paced": 99.42,
-        "sp_ddcl_density": 99.78,
-        "sp_ddcl_point": 99.85,
-        "source": "Paper Table 1 / Table 2 (MLP single models, 200 epochs)"
+        "no_curriculum": 99.879,
+        "ddcl_density": 99.913,
+        "ddcl_point": 99.942,
+        "self_paced": 99.939,
+        "sp_ddcl_density": 99.884,
+        "sp_ddcl_point": 99.884,
+        "source": "dynamic-ddcl.pdf Table 2 (p. 9, row 'Banknote', 200 epochs, 30 runs)"
       },
-      "r2_ensemble": {
-        "standard_paper_baseline": null,
+      "r2_ensemble_600": {
+        "standard_nn_svm": null,
         "ddcl_6strategy": null,
         "controlled_6nn": null,
-        "source": "Team extension (Banknote absent from Paper Table 3)"
+        "source": "dynamic-ddcl.pdf Table 3 does not include Banknote (Team Extension)"
+      },
+      "r2_ensemble_200": {
+        "standard_nn_svm": null,
+        "ddcl_6strategy": null,
+        "controlled_6nn": null,
+        "source": "Team intermediate evaluation (200 epochs/member, 30 runs)"
       }
     }
   }

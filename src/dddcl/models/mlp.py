@@ -245,3 +245,4 @@ def create_mlp_model(
         activation=activation,
         seed=seed,
     )
+

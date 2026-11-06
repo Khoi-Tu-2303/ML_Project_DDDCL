@@ -251,3 +251,4 @@ def test_real_dataset_curriculum_strategies():
         assert len(res.ordered_train_ids) == len(X_train)
         assert set(res.ordered_train_ids) == set(split.train_ids)
         assert len(res.scores) == len(X_train)
+

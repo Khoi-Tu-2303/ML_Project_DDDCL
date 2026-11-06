@@ -128,3 +128,4 @@ def save_metrics_json(filepath: str | Path, metrics: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2, sort_keys=True)
+

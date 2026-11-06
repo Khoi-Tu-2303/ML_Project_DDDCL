@@ -151,3 +151,4 @@ def resample_curriculum_bins(
             "bin_details": bin_reports,
         },
     )
+

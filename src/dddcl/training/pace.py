@@ -119,3 +119,4 @@ def should_reintroduce_hard(mean_easy_loss: float, lambda_val: float) -> bool:
     If model's loss on easy data is below lambda, re-add hard batches.
     """
     return bool(mean_easy_loss < lambda_val)
+

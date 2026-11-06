@@ -144,3 +144,4 @@ def partition_by_class(
         n_bins_per_class=n_bins_per_class,
         fallback_classes=fallback_classes,
     )
+

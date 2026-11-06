@@ -221,3 +221,4 @@ with open('notebooks/02_curriculum_walkthrough.ipynb', 'w', encoding='utf-8') as
     nbf.write(nb, f)
 
 print('Tạo file notebooks/02_curriculum_walkthrough.ipynb thành công!')
+

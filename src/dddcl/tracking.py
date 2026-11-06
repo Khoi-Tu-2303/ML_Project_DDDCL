@@ -159,3 +159,4 @@ class ExperimentTracker:
     def wandb_url(self) -> str | None:
         """Return the active W&B URL if online."""
         return self._wandb_url
+

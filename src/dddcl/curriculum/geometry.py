@@ -97,3 +97,4 @@ def compute_geometry(X: np.ndarray, y: np.ndarray) -> GeometryResult:
         normalized_distances=norm_dists,
         class_norms=class_norms,
     )
+

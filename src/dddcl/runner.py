@@ -56,7 +56,7 @@ def compute_run_fingerprint(resolved_config: Mapping[str, Any]) -> str:
     return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()[:16]
 
 
-def dry_run_matrix(config_path: str | Path) -> dict[str, Any]:
+def dry_run_matrix(config_path: str | Path, runs_dir_override: str | Path | None = None) -> dict[str, Any]:
     """Inspect and summarize the experiment matrix without running training."""
     raw_cfg = load_yaml_or_json_config(config_path)
     datasets = raw_cfg.get("datasets", [])
@@ -64,7 +64,7 @@ def dry_run_matrix(config_path: str | Path) -> dict[str, Any]:
     seeds = raw_cfg.get("seeds", [])
     epochs = raw_cfg.get("epochs", 5)
     protocol_id = raw_cfg.get("protocol_id", "paper_interpretation_clean_v1")
-    runs_dir = Path("outputs/runs")
+    runs_dir = Path(runs_dir_override or raw_cfg.get("runs_dir", "outputs/runs"))
 
     total_fits = len(datasets) * len(strategies) * len(seeds)
     runs_info: list[dict[str, Any]] = []
@@ -382,10 +382,12 @@ def run_experiment_matrix(
     release_dir: str | Path = "hf_release",
 ) -> dict[str, Any]:
     """Run full experiment matrix according to configuration."""
-    if dry_run:
-        return dry_run_matrix(config_path)
-
     raw_cfg = load_yaml_or_json_config(config_path)
+    actual_runs_dir = Path(raw_cfg.get("runs_dir", runs_dir))
+
+    if dry_run:
+        return dry_run_matrix(config_path, runs_dir_override=actual_runs_dir)
+
     datasets = raw_cfg.get("datasets", [])
     strategies = raw_cfg.get("strategies", [])
     seeds = raw_cfg.get("seeds", [])
@@ -400,7 +402,7 @@ def run_experiment_matrix(
                     dataset_id=d,
                     strategy=s,
                     seed=seed,
-                    runs_dir=runs_dir,
+                    runs_dir=actual_runs_dir,
                     splits_dir=splits_dir,
                     release_dir=release_dir,
                     resume=resume,

@@ -72,12 +72,12 @@ Bảng thống kê kết quả kiểm thử trên 3 tập dữ liệu (30 seeds 
 
 | dataset_id | ensemble_type | seeds_completed | mean_accuracy_pct | std_accuracy_ddof1 | mean_macro_f1_pct | std_macro_f1 | avg_tie_count | avg_pairwise_disagreement | paper_reported_pct | delta_vs_paper_pp |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| haberman | DDCL-6 Strategy Ensemble | 13 | 67.0 | 8.75 | 54.49 | 9.79 | 0.8 | 0.0624 | 96.774 | -29.78 |
-| haberman | Standard Paper Baseline (NN+SVM) | 13 | 73.95 | 5.81 | 51.79 | 12.04 | 5.5 | 0.1762 | 90.323 | -16.38 |
-| haberman | Controlled 6-NN Baseline | 10 | 67.74 | 8.05 | 55.39 | 7.51 | 1.2 | 0.0785 | N/A (Team Extension) | N/A |
-| new_thyroid | DDCL-6 Strategy Ensemble | 10 | 94.55 | 5.98 | 91.06 | 12.8 | 0.0 | 0.0015 | 100.0 | -5.45 |
-| new_thyroid | Standard Paper Baseline (NN+SVM) | 10 | 94.09 | 5.69 | 89.38 | 12.94 | 0.6 | 0.0273 | 95.455 | -1.36 |
-| new_thyroid | Controlled 6-NN Baseline | 10 | 94.55 | 5.16 | 91.05 | 12.23 | 0.1 | 0.0058 | N/A (Team Extension) | N/A |
+| haberman | DDCL-6 Strategy Ensemble | 30 | 68.39 | 6.58 | 54.95 | 8.7 | 0.8 | 0.0673 | 96.774 | -28.39 |
+| haberman | Standard Paper Baseline (NN+SVM) | 30 | 74.52 | 5.31 | 52.39 | 11.09 | 5.4 | 0.1742 | 90.323 | -15.81 |
+| haberman | Controlled 6-NN Baseline | 30 | 68.39 | 6.13 | 55.18 | 7.72 | 0.8 | 0.0735 | N/A (Team Extension) | N/A |
+| new_thyroid | DDCL-6 Strategy Ensemble | 30 | 95.61 | 4.38 | 93.53 | 8.25 | 0.0 | 0.0042 | 100.0 | -4.39 |
+| new_thyroid | Standard Paper Baseline (NN+SVM) | 30 | 94.85 | 4.73 | 91.44 | 9.17 | 0.9 | 0.0424 | 95.455 | -0.61 |
+| new_thyroid | Controlled 6-NN Baseline | 30 | 95.61 | 4.54 | 93.3 | 8.71 | 0.0 | 0.0113 | N/A (Team Extension) | N/A |
 
 ### Nhận xét R2:
 - **Đối chiếu Table 3 Bài báo Gốc (600 epochs)**:

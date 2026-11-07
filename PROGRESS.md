@@ -75,12 +75,21 @@ Cập nhật lần cuối: 2026-11-06 (Hoàn thiện các kiểm chứng chuẩn
 | **banknote** | Standard Paper Baseline (NN+SVM) | 30 | **100.00%** | 0.00% | 100.00% | 0.0 mẫu | 0.00% | N/A | Mở rộng độc lập của nhóm |
 | **banknote** | Controlled 6-NN Baseline | 30 | **100.00%** | 0.00% | 100.00% | 0.0 mẫu | 0.00% | N/A | Mở rộng độc lập của nhóm |
 
-#### 2.3b. Giao thức Chuẩn Paper Table 3 (600 epochs/thành viên — `outputs/ensembles_600/`):
-- Đang lưu trữ và cập nhật tại `outputs/ensembles_600/`.
-- Đối chiếu trực tiếp Table 3 (p. 9):
-  * `haberman`: Standard Ensemble paper báo 90.323 ± 0.000% (28/31 mẫu đúng), DDCL Ensemble báo 96.774 ± 0.000% (30/31 mẫu đúng).
-  * `new_thyroid`: Standard Ensemble paper báo 95.455 ± 0.000% (21/22 mẫu đúng), DDCL Ensemble báo 100.000 ± 0.000% (22/22 mẫu đúng).
-  * `banknote`: Không có trong Table 3 paper (Team Extension).
+#### 2.3b. Giao thức Chuẩn Paper Table 3 (600 epochs/thành viên — 30 seeds, 180 evaluations tại `outputs/ensembles_600/`):
+
+| Dataset | Cấu hình Ensemble | Seeds | Accuracy trung bình | SD mẫu (ddof=1) | Macro-F1 | Tỷ lệ hòa trung bình | Bất đồng dự đoán | Paper Table 3 (600ep) | Delta vs Paper (pp) |
+|---|---|---|---|---|---|---|---|---|---|
+| **haberman** | DDCL-6 Strategy Ensemble | 30 | **68.39%** | 6.58% | 54.95% | 0.8 mẫu | 6.73% | 96.774% ± 0.000% | -28.39 pp |
+| **haberman** | Standard Paper Baseline (NN+SVM) | 30 | **74.52%** | 5.31% | 52.39% | 5.4 mẫu | 17.42% | 90.323% ± 0.000% | -15.81 pp |
+| **haberman** | Controlled 6-NN Baseline | 30 | **68.39%** | 6.13% | 55.18% | 0.8 mẫu | 7.35% | N/A (Team Extension) | N/A |
+| **new_thyroid** | DDCL-6 Strategy Ensemble | 30 | **95.61%** | 4.38% | 93.53% | 0.0 mẫu | 0.42% | 100.000% ± 0.000% | -4.39 pp |
+| **new_thyroid** | Standard Paper Baseline (NN+SVM) | 30 | **94.85%** | 4.73% | 91.44% | 0.9 mẫu | 4.24% | 95.455% ± 0.000% | -0.61 pp |
+| **new_thyroid** | Controlled 6-NN Baseline | 30 | **95.61%** | 4.54% | 93.30% | 0.0 mẫu | 1.13% | N/A (Team Extension) | N/A |
+
+- **Nhận định Table 3**:
+  * Trên `new_thyroid`: `Standard Paper Baseline` đạt 94.85% (so với 95.455% của bài báo, chỉ lệch -0.61 pp). `DDCL-6 Ensemble` đạt 95.61% (so với 100.000% của bài báo, chỉ lệch -4.39 pp, tương đương ~1 mẫu sai biệt trên tập test 22 mẫu).
+  * Trên `haberman`: `Standard Paper Baseline (NN+SVM)` đạt 74.52%, thể hiện ưu thế vượt trội của SVM biên mềm trên dữ liệu imbalanced so với các mô hình 6-NN (68.39%). Độ lệch chuẩn $\pm 0.000\%$ của tác giả phản ánh việc chỉ đánh giá trên 1 test split 10% cố định (31 mẫu).
+  * `banknote`: Không xuất hiện trong Table 3 của bài báo gốc (được đánh dấu minh bạch là Team Extension scope).
 
 ---
 
@@ -103,14 +112,15 @@ Cập nhật lần cuối: 2026-11-06 (Hoàn thiện các kiểm chứng chuẩn
 ---
 
 ### 2.5. Kiểm thử Hệ thống & Artifacts
-- **Kiểm thử PyTest**: **35/35 tests PASS 100%**:
+- **Kiểm thử PyTest**: **44/44 tests PASS 100%**:
   - `tests/test_environment.py`: 5/5 PASS.
   - `tests/test_data_pipeline.py`: 6/6 PASS.
   - `tests/test_curriculum.py`: 9/9 PASS.
   - `tests/test_training.py`: 7/7 PASS.
   - `tests/test_ensemble.py`: 8/8 PASS (Bao gồm test tie-breaking D09, alignment và controlled ensemble).
+  - `tools/test_data_tools.py`: 9/9 PASS.
 - **Notebook Trực quan hóa**:
-  - `notebooks/04_reproduction.ipynb`: Đã tạo mới và thực thi hoàn tất trên kernel `ddcl-local`, bao gồm biểu đồ R1 30 seeds, biểu đồ R2 Ensemble & Disagreement, biểu đồ R3 Sensitivity, và biểu đồ so sánh trực tiếp Pilot vs Final.
+  - `notebooks/04_reproduction.ipynb`: Đã tạo mới và thực thi hoàn tất trên kernel `ddcl-local`, bao gồm biểu đồ R1 30 seeds, bảng R2 200 epochs và R2 600 epochs đối chiếu Table 3 bài báo, biểu đồ R2 Ensemble & Disagreement, biểu đồ R3 Sensitivity, và biểu đồ so sánh trực tiếp Pilot vs Final.
 
 ---
 

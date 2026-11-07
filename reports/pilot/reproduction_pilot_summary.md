@@ -83,7 +83,7 @@ Khảo sát tác động của giá trị ngưỡng ban đầu $\lambda_{initial
 
 ### Nhận xét R3:
 - Trên **New Thyroid**: Cả 3 ngưỡng $\lambda \in \{0.2, 0.4, 0.6\}$ đều đạt độ chính xác trung bình **95.76% ± 3.95%**; số bước cập nhật mẫu tăng dần theo $\lambda$ (từ 1862.5 lên 1877.0 bước) do ngưỡng cao hơn cho phép thu nhận các batch khó sớm hơn.
-- Trên **Haberman**: Ngưỡng $\lambda=0.4$ cho độ chính xác trung bình cao nhất trong không gian khảo sát $\lambda \in \{0.2, 0.4, 0.6\}$ với **71.18% ± 5.68%** (so với 70.75% ở $\lambda=0.2$ và 70.65% ở $\lambda=0.6$). Số bước cập nhật tăng đều từ 2381.8 lên 2458.2 bước khi $\lambda$ tăng.
+- Trên **Haberman**: Trong 3 mốc khảo sát cục bộ $\lambda \in \{0.2, 0.4, 0.6\}$, mốc $\lambda=0.4$ ghi nhận độ chính xác trung bình mẫu là **71.18% ± 5.68%** (cao hơn 70.75% ở $\lambda=0.2$ khoảng 0.43 điểm phần trăm và 70.65% ở $\lambda=0.6$ khoảng 0.53 điểm phần trăm). Khoảng chênh lệch này nằm trong phạm vi độ lệch chuẩn mẫu (~5.3 - 6.5 pp), do đó chỉ phản ánh tương quan trong phạm vi 3 điểm khảo sát, không khẳng định $\lambda=0.4$ là giá trị tối ưu toàn cục. Số bước cập nhật tăng đều từ 2381.8 lên 2458.2 bước khi $\lambda$ tăng.
 
 ---
 
@@ -94,16 +94,23 @@ Khảo sát tác động của giá trị ngưỡng ban đầu $\lambda_{initial
    - Revision Git Commit: `140c06864683d8c20a9cc2441a90a3d89099759a`
    - Manifest SHA-256: `df313412d044bd9db651c9b07f8ea14a27a76b2036a6afb6516cc87cb4f80851`
    - Tình trạng kiểm chứng: Script `tools/check_hf_data.py` xác thực thành công 100% checksum SHA-256 của cả 3 bộ dữ liệu (`haberman`: 306 dòng, `new_thyroid`: 215 dòng, `banknote`: 1372 dòng).
-2. **Thực tế Tracking W&B và Local Accounting**:
-   - Để tối ưu hóa tốc độ I/O và tính độc lập tuyệt đối khi chạy 990 runs trên CPU cục bộ, các run được thực thi với `tracking.mode: disabled`.
-   - Toàn bộ thông tin nhật ký (mất mát từng epoch, số bước optimizer, số mẫu tiếp xúc, giá trị lambda, độ chính xác val) được ghi nhận 100% đầy đủ trong `trace.jsonl` và `metrics.json` tại từng thư mục run.
-   - Repository cung cấp sẵn công cụ `tools/sync_wandb.py` cho phép đồng bộ toàn bộ runs lên bảng điều khiển W&B công khai khi cấu hình khóa API.
-3. **Thống kê Số Runs Hợp Lệ Đã Hoàn Thành**:
-   - **R1 Final Headline (200 epochs, 30 seeds)**: 540 / 540 runs hợp lệ (100%).
-   - **R2 Final Ensemble (200 epochs, 30 seeds)**: 270 / 270 evaluations hợp lệ (100%).
-   - **R3 Final Sensitivity (200 epochs, 30 seeds, 3 lambdas)**: 180 / 180 runs hợp lệ (100%).
-   - **R2 Chuẩn 600 Epochs (đối chiếu Table 3)**: Đã hoàn tất các runs kiểm chứng độc lập trên `outputs/ensembles_600/`.
-   - Tổng cộng số runs thực tế đã hoàn thành: **990+ runs/evaluations**.
+2. **Trạng thái Tracking Weights & Biases (W&B)**:
+   - **Trạng thái hiện tại: PENDING (Chưa có public URL / chưa kết nối cloud W&B)**.
+   - Toàn bộ dữ liệu thực nghiệm hiện được ghi nhận và lưu trữ cục bộ đầy đủ qua file `trace.jsonl` (từng epoch) và `metrics.json` tại từng thư mục run.
+   - Script `tools/sync_wandb.py` đã sẵn sàng để đồng bộ lên dashboard W&B công khai khi được cấu hình API key và URL dự án.
+3. **Phân định rõ ràng số lượng Training Runs, Ensemble Evaluations và Kết quả Tái sử dụng**:
+   - **Training runs (các lượt huấn luyện mô hình thực sự)**: Tổng cộng 2.130 lượt huấn luyện mô hình (không tính pilot):
+     * R1 Headline (200 epochs): **540 runs** (3 datasets × 6 strategies × 30 seeds).
+     * R2 200 epochs: **630 runs** (3 datasets × 30 seeds × [1 SVM + 6 Controlled NNs]).
+     * R2 600 epochs: **780 runs** (2 datasets × 30 seeds × [6 DDCL NNs + 1 SVM + 6 Controlled NNs]).
+     * R3 Sensitivity (200 epochs): **180 runs** (2 datasets × 3 lambda × 30 seeds).
+   - **Ensemble evaluations (các lượt đánh giá tổ hợp / bỏ phiếu đa số trên test set)**: Tổng cộng 450 lượt đánh giá:
+     * R2 200 epochs: **270 evaluations** (3 datasets × 3 cấu hình × 30 seeds).
+     * R2 600 epochs: **180 evaluations** (2 datasets: `haberman` [90] và `new_thyroid` [90]; `banknote` [0]).
+   - **Kết quả tái sử dụng (Reused Results)**:
+     * Trong R2 200 epochs, cấu hình `ddcl_6strategy` (90 evaluations) **tái sử dụng 100% kết quả dự đoán test set từ 540 runs của R1**, không sinh thêm training run mới.
+     * Cấu hình `standard_nn_svm` (90 evaluations trong R2 200 epochs) **tái sử dụng dự đoán `no_curriculum` từ R1** và kết hợp với thành viên SVM.
+   - **Quy tắc thống kê**: Không cộng gộp số lượt đánh giá ensemble với số lượt huấn luyện mô hình để tránh gây hiểu nhầm về số lượng thực nghiệm độc lập.
 
 ---
 

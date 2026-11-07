@@ -7,7 +7,7 @@
 > - Bài báo: Shonal Chaudhry & Anuraganand Sharma, *Dynamic Data Distribution-based Curriculum Learning*, **Information Sciences** 702 (2025) 121924, DOI: `10.1016/j.ins.2025.121924` (tập tin PDF: `references/papers/dynamic-ddcl.pdf`).
 > - **Table 1 (Trang 8)**: Single models (200 epochs, 30 runs, split 70/20/10) trên Haberman và New-Thyroid.
 > - **Table 2 (Trang 9)**: Single models (200 epochs, 30 runs) trên Banknote.
-> - **Table 3 (Trang 9)**: Ensemble models (600 epochs/member, 30 runs) trên Haberman và New-Thyroid. Banknote không xuất hiện trong Table 3 của bài báo gốc và được đánh dấu minh bạch là Team Extension.
+> - **Table 3 (Trang 9)**: Bài báo gốc gồm 6 tập dữ liệu: Breast Cancer Wisconsin (Diagnostic), Cancer, Haberman's Survival, Liver Disorder, Pima Indians Diabetes và New-Thyroid với Ensemble models (600 epochs/member, 30 runs). Trong phần việc do cá nhân phụ trách (User), thành viên đã hoàn thành tái lập trên 2 tập được phân công là Haberman và New-Thyroid. Tập Banknote (từ Table 2) không xuất hiện trong Table 3 bài báo gốc và được đánh giá độc lập ở mốc 200 epochs. Các datasets còn lại của bài báo thuộc phân công của các thành viên khác trong nhóm và hiện ở trạng thái **Chưa xác nhận** (không tự ý thu hẹp phạm vi đồ án).
 > - **Quy ước đơn vị**: Cột chênh lệch ghi nhận bằng **điểm phần trăm (pp - percentage points)** để phân biệt rạch ròi với tỷ lệ phần trăm tương đối (%).
 
 ---
@@ -84,7 +84,7 @@ Bảng thống kê kết quả kiểm thử trên 3 tập dữ liệu (30 seeds 
   * Trên `new_thyroid`: Bài báo Table 3 báo cáo Standard Ensemble: 95.455% ± 0.000% và DDCL Ensemble: 100.000% ± 0.000%. Thực nghiệm 30 seeds của nhóm đạt 94.85% ± 4.73% cho Standard Ensemble (lệch -0.61 pp) và 95.61% ± 4.38% cho DDCL-6 (lệch -4.39 pp).
   * Trên `haberman`: Bài báo Table 3 báo cáo Standard Ensemble: 90.323% ± 0.000% và DDCL Ensemble: 96.774% ± 0.000%. Thực nghiệm 30 seeds của nhóm đạt 74.52% ± 5.31% cho Standard Ensemble và 68.39% ± 6.58% cho DDCL-6.
   * Bài báo gốc ghi nhận độ lệch chuẩn ± 0.000% cho cả hai ensemble. Toàn bộ các giả thuyết về quy trình phân chia split, số lần chia split thực tế hoặc cơ chế đánh giá của tác giả chưa được kiểm chứng từ mã nguồn gốc và sẽ được xác minh chính thức trong Phase F.
-  * Tập `banknote`: Không chạy 600 epochs do Table 3 của bài báo gốc không chứa tập Banknote (Banknote chỉ được nhóm khảo sát mở rộng ở mốc 200 epochs tại mục 2a).
+  * Phạm vi Table 3: Table 3 bài báo gốc gồm 6 tập dữ liệu (Breast Cancer Wisconsin (Diagnostic), Cancer, Haberman's Survival, Liver Disorder, Pima Indians Diabetes, New-Thyroid). Trong phân công thực nghiệm của cá nhân phụ trách (User), thành viên đã hoàn tất tái lập trên 2 tập được giao là `haberman` và `new_thyroid` (180 evaluations). Tập `banknote` (từ Table 2) không xuất hiện trong Table 3 bài báo gốc nên có đúng **0 evaluations** ở mốc 600 epochs (Banknote được khảo sát mở rộng độc lập ở mốc 200 epochs). Các datasets còn lại của bài báo thuộc phân công của các thành viên khác trong nhóm và hiện ở trạng thái **Chưa xác nhận** (không tự ý thu hẹp phạm vi đồ án).
 - **Tỷ lệ Bất đồng Dự đoán (Pairwise Disagreement)**: Tỷ lệ bất đồng dự đoán giữa 6 thành viên đạt từ 0.4% đến 6.7% trên tập kiểm thử. Đây là chỉ dấu ghi nhận sự khác biệt dự đoán ở mức độ mẫu đơn lẻ giữa các cơ chế sắp xếp, chưa đủ để khái quát thành quy luật giảm phương sai (variance reduction) toàn diện.
 - **Cơ chế Tie-break Quyết định D09**: Trên 30 seeds, các tình huống hòa phiếu được phân định dứt điểm và khách quan theo train class prior, bảo đảm không rò rỉ bất kỳ thông tin nào từ nhãn kiểm thử.
 
@@ -121,24 +121,56 @@ Khảo sát tác động của giá trị ngưỡng ban đầu $\lambda_{initial
    - Toàn bộ dữ liệu thực nghiệm hiện được ghi nhận và lưu trữ cục bộ đầy đủ qua file `trace.jsonl` (từng epoch) và `metrics.json` tại từng thư mục run.
    - Script `tools/sync_wandb.py` đã sẵn sàng để đồng bộ lên dashboard W&B công khai khi được cấu hình API key và URL dự án.
 3. **Phân định rõ ràng số lượng Training Runs, Ensemble Evaluations và Kết quả Tái sử dụng**:
-   - **Training runs (các lượt huấn luyện mô hình thực sự)**: Tổng cộng 2.130 lượt huấn luyện mô hình (không tính pilot):
-     * R1 Headline (200 epochs): **540 runs** (3 datasets × 6 strategies × 30 seeds).
-     * R2 200 epochs: **630 runs** (3 datasets × 30 seeds × [1 SVM + 6 Controlled NNs]).
-     * R2 600 epochs: **780 runs** (2 datasets × 30 seeds × [6 DDCL NNs + 1 SVM + 6 Controlled NNs]).
-     * R3 Sensitivity (200 epochs): **180 runs** (2 datasets × 3 lambda × 30 seeds).
+   - **Training runs (các lượt huấn luyện mô hình thực sự - không đếm trùng)**: Tổng cộng **2.070 lượt huấn luyện mô hình** (không tính pilot):
+     * R1 Headline (200 epochs): **540 runs** (3 datasets × 6 strategies × 30 seeds, 100% train mới).
+     * R2 200 epochs (thành viên mới): **630 runs** (3 datasets × 30 seeds × [1 SVM + 6 Controlled NNs]).
+     * R2 600 epochs (huấn luyện độc lập 600 epochs trên phần phân công cá nhân): **780 runs** (2 datasets: `haberman` [390] và `new_thyroid` [390] × 30 seeds × [6 DDCL NNs + 1 SVM + 6 Controlled NNs]).
+     * R3 Sensitivity (200 epochs, train mới): **120 runs** (2 datasets × 2 mốc mới $\lambda \in \{0.2, 0.6\} \times 30$ seeds).
+     * *(Lưu ý quan trọng về R3: Thí nghiệm R3 có tổng cộng 180 kết quả đánh giá qua 30 seeds, nhưng mốc $\lambda=0.4$ tái sử dụng nguyên vẹn 60 runs từ R1 `sp_ddcl_point` do cùng cấu hình mặc định, do đó chỉ có đúng 120 lượt train mới)*.
+     * **Tổng số Training Runs thực tế**: 540 + 630 + 780 + 120 = **2,070 runs**.
    - **Ensemble evaluations (các lượt đánh giá tổ hợp / bỏ phiếu đa số trên test set)**: Tổng cộng 450 lượt đánh giá:
      * R2 200 epochs: **270 evaluations** (3 datasets × 3 cấu hình × 30 seeds).
-     * R2 600 epochs: **180 evaluations** (2 datasets: `haberman` [90] và `new_thyroid` [90]; `banknote` [0]).
-   - **Kết quả tái sử dụng (Reused Results)**:
-     * Trong R2 200 epochs, cấu hình `ddcl_6strategy` (90 evaluations) **tái sử dụng 100% kết quả dự đoán test set từ 540 runs của R1**, không sinh thêm training run mới.
-     * Cấu hình `standard_nn_svm` (90 evaluations trong R2 200 epochs) **tái sử dụng dự đoán `no_curriculum` từ R1** và kết hợp với thành viên SVM.
-   - **Quy tắc thống kê**: Không cộng gộp số lượt đánh giá ensemble với số lượt huấn luyện mô hình để tránh gây hiểu nhầm về số lượng thực nghiệm độc lập.
+     * R2 600 epochs: **180 evaluations** (2 datasets phân công cá nhân: `haberman` [90] và `new_thyroid` [90]; `banknote` [0]).
+   - **Kết quả tái sử dụng (Reused Results)**: Tổng cộng **240 lượt**:
+     * Trong R2 200 epochs: **90 evaluations** của `ddcl_6strategy` tái sử dụng 100% dự đoán test set từ 540 runs của R1.
+     * Trong R2 200 epochs: **90 evaluations** của `standard_nn_svm` tái sử dụng dự đoán test set `no_curriculum` từ R1 kết hợp với SVM.
+     * Trong R3 Sensitivity: **60 runs** của mốc $\lambda=0.4$ tái sử dụng từ 60 runs của chiến lược `sp_ddcl_point` trong R1.
+   - **Quy tắc thống kê**: Tuyệt đối không cộng gộp lẫn lộn số lượt đánh giá ensemble hoặc kết quả tái sử dụng với số lượt huấn luyện mô hình để tránh gây hiểu nhầm về số lượng thực nghiệm độc lập.
 
 ---
 
-## 5. Ghi nhận Sai lệch Phương pháp luận (Methodological Deviations)
+## 5. Bảng Bàn giao Nhiệm vụ Thực nghiệm (Handover Matrix)
+
+| Tập dữ liệu (Dataset) | Nguồn tham chiếu Paper / Giao thức | Thí nghiệm | Người phụ trách | Trạng thái | Ghi chú Artifacts |
+|---|---|---|---|---|---|
+| **Haberman's Survival** | Table 1 (p. 8) | R1 Headline (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 180 runs (`outputs/runs_final/haberman_*`) |
+| **Haberman's Survival** | Ngân sách bổ sung của nhóm | R2 Ensemble (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/ensembles_final/*/haberman_*`) |
+| **Haberman's Survival** | Table 3 (p. 9) | R2 Ensemble (600 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/ensembles_600/*/haberman_*`) |
+| **Haberman's Survival** | Phân tích bổ sung của nhóm | R3 Sensitivity (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/sensitivity_final/`) |
+| **New-Thyroid** | Table 1 (p. 8) | R1 Headline (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 180 runs (`outputs/runs_final/new_thyroid_*`) |
+| **New-Thyroid** | Ngân sách bổ sung của nhóm | R2 Ensemble (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/ensembles_final/*/new_thyroid_*`) |
+| **New-Thyroid** | Table 3 (p. 9) | R2 Ensemble (600 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/ensembles_600/*/new_thyroid_*`) |
+| **New-Thyroid** | Phân tích bổ sung của nhóm | R3 Sensitivity (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/sensitivity_final/`) |
+| **Banknote** | Table 2 (p. 9) | R1 Headline (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 180 runs (`outputs/runs_final/banknote_*`) |
+| **Banknote** | Ngân sách bổ sung của nhóm | R2 Ensemble (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/ensembles_final/*/banknote_*`) |
+| **Banknote** | Paper Table 3 (không có) | R2 Ensemble (600 ep) | Người dùng (User) | **Không áp dụng** | Không thuộc Table 3 bài báo gốc |
+| **Breast Cancer Wisconsin (Diagnostic)** | Table 1 & Table 3 | R1, R2 (600 ep) | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+| **Breast Cancer Wisconsin (Diagnostic)** | Phân tích bổ sung của nhóm | R3 Sensitivity | Chưa xác nhận người phụ trách | **Chờ thống nhất** | Chờ thống nhất toàn nhóm có chạy R3 hay không |
+| **Cancer** | Table 1 & Table 3 | R1, R2 (600 ep) | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+| **Cancer** | Phân tích bổ sung của nhóm | R3 Sensitivity | Chưa xác nhận người phụ trách | **Chờ thống nhất** | Chờ thống nhất toàn nhóm có chạy R3 hay không |
+| **Liver Disorder** | Table 1 & Table 3 | R1, R2 (600 ep) | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+| **Liver Disorder** | Phân tích bổ sung của nhóm | R3 Sensitivity | Chưa xác nhận người phụ trách | **Chờ thống nhất** | Chờ thống nhất toàn nhóm có chạy R3 hay không |
+| **Pima Indians Diabetes** | Table 1 & Table 3 | R1, R2 (600 ep) | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+| **Pima Indians Diabetes** | Phân tích bổ sung của nhóm | R3 Sensitivity | Chưa xác nhận người phụ trách | **Chờ thống nhất** | Chờ thống nhất toàn nhóm có chạy R3 hay không |
+| **ISOLET** | Table 2 (p. 9) | R1 Stand-alone | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+| **Optical Digits** | Table 2 (p. 9) | R1 Stand-alone | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+| **Clean1** | Table 2 (p. 9) | R1 Stand-alone | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+
+---
+
+## 6. Ghi nhận Sai lệch Phương pháp luận (Methodological Deviations)
 
 1. **Backend Tính toán**: Nhóm sử dụng PyTorch CPU deterministic (khác TensorFlow 2.17 của tác giả).
 2. **Tỷ lệ Phân chia Dữ liệu**: Chuẩn Stratified 70/20/10 tách trước mọi tiền xử lý (khác tỷ lệ 72/20/8 ngầm định trong code tác giả).
 3. **Phân biệt Giao thức Ensemble 200 epochs vs 600 epochs**: Nhóm lưu trữ tách bạch cả cấu hình 200 epochs (trung gian) và 600 epochs (chuẩn Table 3 của bài báo).
-4. **Tập Banknote trong Ensemble**: Trong bài báo gốc, Table 3 không có tập Banknote; kết quả Banknote là phạm vi mở rộng độc lập của nhóm sinh viên.
+4. **Phân biệt Phần việc Cá nhân vs Tiến độ Toàn nhóm**: Báo cáo này ghi nhận kết quả phần việc cá nhân do thành viên phụ trách (User) thực hiện trên 3 tập dữ liệu (`Haberman`, `New-Thyroid`, `Banknote`). Tiến độ của các thành viên khác đối với các tập dữ liệu còn lại trong bài báo (`Breast Cancer Wisconsin (Diagnostic)`, `Cancer`, `Liver Disorder`, `Pima Indians Diabetes`, `ISOLET`, `Digits`, `Clean1`) hiện ở trạng thái **Chưa xác nhận**; tuyệt đối không tự ý thu hẹp phạm vi đồ án của toàn nhóm theo phần việc cá nhân.

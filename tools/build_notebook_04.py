@@ -146,7 +146,8 @@ def create_reproduction_notebook() -> nbf.NotebookNode:
         "- Bài báo báo cáo `haberman`: Standard Ensemble: 90.323% ± 0.000%, DDCL Ensemble: 96.774% ± 0.000%.\n"
         "- Bài báo báo cáo `new_thyroid`: Standard Ensemble: 95.455% ± 0.000%, DDCL Ensemble: 100.000% ± 0.000%.\n"
         "- Bài báo gốc ghi nhận độ lệch chuẩn ± 0.000% cho cả hai ensemble. Toàn bộ các giả thuyết về quy trình phân chia split, số lần chia split thực tế hoặc cơ chế đánh giá của tác giả chưa được kiểm chứng từ mã nguồn gốc và sẽ được xác minh chính thức trong Phase F.\n"
-        "- Tập `banknote`: Không chạy 600 epochs do Table 3 của bài báo gốc không chứa tập Banknote (Banknote chỉ được nhóm khảo sát mở rộng ở mốc 200 epochs tại mục 2a)."
+        "- Table 3 trong bài báo gốc gồm 6 tập dữ liệu: Breast Cancer Wisconsin (Diagnostic), Cancer, Haberman’s Survival, Liver Disorder, Pima Indians Diabetes và New-Thyroid. Trong phần việc cá nhân do tôi phụ trách, tôi thực hiện tái lập trên 2 tập được phân công là Haberman và New-Thyroid. Các tập còn lại thuộc phân công của các thành viên khác trong nhóm và hiện ở trạng thái Chưa xác nhận (không tự ý thu hẹp phạm vi đồ án).\n"
+        "- Tập `banknote` (từ Table 2) không xuất hiện trong Table 3 của bài báo gốc nên có đúng 0 evaluations ở mốc 600 epochs (Banknote chỉ được nhóm khảo sát mở rộng độc lập ở mốc 200 epochs tại mục 2a)."
     ))
     cells.append(nbf.v4.new_code_cell(
         "ensembles_600_dir = Path('../outputs/ensembles_600') if Path('../outputs/ensembles_600').exists() else Path('outputs/ensembles_600')\n"
@@ -292,9 +293,13 @@ def create_reproduction_notebook() -> nbf.NotebookNode:
         "   - Quyết định D09 (tie-break theo train class prior) bảo toàn tính khách quan tuyệt đối không nhìn nhãn kiểm thử.\n"
         "3. **Thí nghiệm R3 (Sensitivity)**:\n"
         "   - Trong phạm vi khảo sát cục bộ $\\{\\lambda=0.2, 0.4, 0.6\\}$ trên Haberman, mốc $\\lambda=0.4$ ghi nhận độ chính xác trung bình mẫu là 71.18% ± 5.68% (chênh lệch 0.43 - 0.53 điểm phần trăm so với 0.2 và 0.6, nằm trong phạm vi sai số mẫu nên chỉ phản ánh tương quan cục bộ, không khẳng định tối ưu toàn cục).\n"
-        "4. **Sự Độc lập Tuyệt đối & Minh bạch Dữ liệu**:\n"
-        "   - Toàn bộ kết quả được xây dựng 100% bằng PyTorch CPU deterministic, chưa hề clone hay đọc source code tác giả.\n"
-        "   - Hosted Hugging Face dataset `KieranTuVanKhoi/dynamic-ddcl-benchmarks` (commit `140c06864683d8c20a9cc2441a90a3d89099759a`) xác thực SHA-256 100%."
+        "   - R3 có 180 kết quả đánh giá (30 seeds $\\times$ 3 $\\lambda$ $\\times$ 2 datasets) nhưng mốc $\\lambda=0.4$ tái sử dụng 60 runs từ R1 `sp_ddcl_point`, nên chỉ có đúng 120 lượt train mới.\n"
+        "4. **Phân biệt Phần việc Cá nhân vs Tiến độ Toàn nhóm**:\n"
+        "   - **Phần cá nhân (User) phụ trách và đã hoàn tất**: R1 trên `Haberman`, `New-Thyroid`, `Banknote` (540 runs); R2 200 epochs trên 3 tập (270 evaluations); R2 600 epochs trên `Haberman` và `New-Thyroid` (180 evaluations); R3 trên 2 tập (180 evaluations: 120 train mới + 60 tái sử dụng).\n"
+        "   - **Phạm vi và tiến độ toàn nhóm**: Chưa được xác nhận đầy đủ. Các datasets và thí nghiệm còn lại trong bài báo (`Breast Cancer Wisconsin (Diagnostic)`, `Cancer`, `Liver Disorder`, `Pima Indians Diabetes`, `ISOLET`, `Digits`, `Clean1`) thuộc phân công các thành viên khác trong nhóm và được đánh dấu là 'Chưa xác nhận' (không tự ý thu hẹp phạm vi đồ án theo phần cá nhân).\n"
+        "   - **Khối lượng thực nghiệm phần cá nhân (không đếm trùng)**: 2,070 training runs thực tế, 450 ensemble evaluations, 240 lượt tái sử dụng kết quả.\n"
+        "   - Hosted Hugging Face dataset `KieranTuVanKhoi/dynamic-ddcl-benchmarks` (commit `140c06864683d8c20a9cc2441a90a3d89099759a`) xác thực SHA-256 100%.\n"
+        "   - Public W&B Dashboard: **PENDING (chưa có public URL)**. Toàn bộ logs được lưu trữ cục bộ đầy đủ qua `trace.jsonl` và `metrics.json`."
     ))
 
     nb.cells = cells

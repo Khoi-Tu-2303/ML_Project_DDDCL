@@ -12,7 +12,7 @@ Cập nhật lần cuối: 2026-11-06 (Hoàn thiện các kiểm chứng chuẩn
 | **Phase B** | Data hosted và split contract | **COMPLETED / PASSED (100% Hosted HF & Local Verified)** | Dữ liệu đã được publish lên HF `KieranTuVanKhoi/dynamic-ddcl-benchmarks` (revision `140c06864683d8c20a9cc2441a90a3d89099759a`). Đã xác thực tải và kiểm tra SHA-256 từ cloud thành công 100%. Đã triển khai `src/dddcl/data/`. Sinh 90 split files stratified 70/20/10 (30 seeds × 3 datasets). `notebooks/01_data_audit.ipynb` executed thành công. |
 | **Phase C** | Curriculum + Pace pure logic | **COMPLETED / PASSED** | Đã triển khai `src/dddcl/curriculum/` (geometry, partition, resample, scoring) và `src/dddcl/training/pace.py`. Toàn bộ 9/9 unit tests tính tay, degenerate cases và oracle pass. `notebooks/02_curriculum_walkthrough.ipynb` executed thành công. |
 | **Phase D** | Training loop độc lập & checkpoints | **COMPLETED / PASSED** | Đã triển khai PyTorch MLP model (`src/dddcl/models/mlp.py`), vòng lặp huấn luyện độc lập (`src/dddcl/training/loop.py`), atomic checkpoints (`src/dddcl/training/checkpoint.py`), metrics (`src/dddcl/metrics.py`), tracking JSONL/W&B (`src/dddcl/tracking.py`), runner & CLI (`src/dddcl/runner.py`, `cli.py run --dry-run`). 7/7 unit tests pass. `notebooks/03_training_walkthrough.ipynb` executed thành công. |
-| **Phase E** | Reproduction + Ensemble | **HOÀN THIỆN ĐỐI CHIẾU CHUẨN XÁC (Dừng tại Phase E, chưa sang F)** | **Tách bạch hoàn toàn Pilot, Final 200 epochs, và Final 600 epochs**:<br>• **Pilot**: 54 runs R1 (5 epochs, 3 seeds), 9 ensembles R2, 6 runs R3, lưu tại `outputs/*_pilot` & `reports/pilot/`.<br>• **Final Core R1**: **540 training runs** (200 epochs, 30 seeds), lưu tại `outputs/runs_final/`.<br>• **Final Core R2 (200 ep)**: **270 evaluations** (3 ensemble types × 30 seeds), lưu tại `outputs/ensembles_final/`.<br>• **Final Core R2 (600 ep)**: **180 evaluations** (2 datasets × 3 ensemble types × 30 seeds; Banknote = 0 do không có trong Table 3 paper), lưu tại `outputs/ensembles_600/`.<br>• **Final Core R3**: **180 training runs** ($\lambda \in \{0.2, 0.4, 0.6\}$ × 30 seeds), lưu tại `outputs/sensitivity_final/`.<br>• **Bóc tách khối lượng**: 2.130 training runs thực tế, 450 ensemble evaluations, 180 reused predictions (tuyệt đối không gộp chung thành 1.170 thực nghiệm độc lập).<br>• **Kiểm chứng Paper Benchmark**: Đã đối chiếu 100% từng ô số liệu với `references/papers/dynamic-ddcl.pdf` (Elsevier Information Sciences 2025). 44/44 unit tests pass. W&B Dashboard: **PENDING (chưa có public URL)**. |
+| **Phase E** | Reproduction + Ensemble | **HOÀN THIỆN ĐỐI CHIẾU CHUẨN XÁC (Dừng tại Phase E, chưa sang F)** | **Tách bạch hoàn toàn Pilot, Final 200 epochs, và Final 600 epochs**:<br>• **Pilot**: 54 runs R1 (5 epochs, 3 seeds), **27 evaluations R2** (3 datasets × 3 cấu hình × 3 seeds), 18 runs R3 (2 datasets × 3 lambdas × 3 seeds, trong đó mốc $\lambda=0.4$ có 6 runs tái sử dụng từ R1), lưu tại `outputs/*_pilot` & `reports/pilot/`.<br>• **Phần cá nhân (User phụ trách) đã hoàn tất**: R1 trên `Haberman`, `New-Thyroid`, `Banknote` (**540 training runs**); R2 200 epochs trên 3 tập (**270 evaluations**); R2 600 epochs trên `Haberman` và `New-Thyroid` (**180 evaluations**; Banknote không có trong Table 3 paper); R3 trên 2 tập (**180 kết quả đánh giá: 120 train mới + 60 tái sử dụng**).<br>• **Phạm vi & Tiến độ toàn nhóm**: Chưa được xác nhận đầy đủ; các datasets còn lại trong bài báo (`Breast Cancer Wisconsin (Diagnostic)`, `Cancer`, `Liver Disorder`, `Pima Indians Diabetes`, `ISOLET`, `Digits`, `Clean1`) thuộc phân công các thành viên khác trong nhóm và để trạng thái "Chưa xác nhận" (không tự ý thu hẹp đồ án).<br>• **Bóc tách khối lượng phần cá nhân**: **2.070 training runs thực tế**, 450 ensemble evaluations, 240 reused predictions/runs (tuyệt đối không đếm trùng hay gộp chung thành 1.170 thực nghiệm độc lập).<br>• **Kiểm chứng Paper Benchmark**: Đã đối chiếu từng ô số liệu với `references/papers/dynamic-ddcl.pdf` (Table 3 gồm 6 datasets: Breast Cancer Wisconsin (Diagnostic), Cancer, Haberman’s Survival, Liver Disorder, Pima Indians Diabetes, New-Thyroid). 44/44 unit tests pass. W&B Dashboard: **PENDING (chưa có public URL)**. |
 | **Phase F** | Audit mã nguồn tác giả | **PENDING (Chờ lệnh người dùng)** | Độc lập 100%, chưa clone hoặc xem code tác giả. Dừng đúng tại Phase E theo yêu cầu. |
 | **Phase G** | Thực nghiệm phản biện lý thuyết (Empirics) | **PENDING** | Giả thuyết E1 (Centroid/Multimodality) và E2 (Batch-level threshold). |
 | **Phase H** | Báo cáo, Slide deck & Poster | **PENDING** | Chuẩn bị artifact bàn giao cho môn học. |
@@ -84,7 +84,7 @@ Cập nhật lần cuối: 2026-11-06 (Hoàn thiện các kiểm chứng chuẩn
   * `new_thyroid` × `DDCL-6 Strategy Ensemble`: 30 evaluations (seeds 0..29).
   * `new_thyroid` × `Standard Paper Baseline (NN+SVM)`: 30 evaluations (seeds 0..29).
   * `new_thyroid` × `Controlled 6-NN Baseline`: 30 evaluations (seeds 0..29).
-  * `banknote`: **0 evaluations** (Do Table 3 của bài báo gốc `dynamic-ddcl.pdf`, p. 9 chỉ báo cáo trên Haberman và New-Thyroid, không có Banknote. Tập Banknote được bảo lưu độc lập ở mốc 200 epochs).
+  * `banknote`: **0 evaluations** (Table 3 trong bài báo gốc gồm đúng 6 tập dữ liệu: Breast Cancer Wisconsin (Diagnostic), Cancer, Haberman’s Survival, Liver Disorder, Pima Indians Diabetes và New-Thyroid. Nhóm chọn 2 tập cốt lõi trong core scope của dự án là Haberman và New-Thyroid. Tập Banknote từ Table 2 không xuất hiện trong 6 tập của Table 3 bài báo gốc nên có đúng 0 evaluations ở mốc 600 epochs, và được bảo lưu độc lập ở mốc 200 epochs).
 
 | Dataset | Cấu hình Ensemble | Seeds | Accuracy trung bình | SD mẫu (ddof=1) | Macro-F1 | Tỷ lệ hòa trung bình | Bất đồng dự đoán | Paper Table 3 (600ep) | Delta vs Paper (pp) |
 |---|---|---|---|---|---|---|---|---|---|
@@ -99,11 +99,11 @@ Cập nhật lần cuối: 2026-11-06 (Hoàn thiện các kiểm chứng chuẩn
   * Trên `new_thyroid`: `Standard Paper Baseline` đạt 94.85% ± 4.73% (so với 95.455% ± 0.000% của bài báo, lệch -0.61 pp). `DDCL-6 Ensemble` đạt 95.61% ± 4.38% (so với 100.000% ± 0.000% của bài báo, lệch -4.39 pp, tương đương sai biệt khoảng ~1 mẫu trên tập test 22 mẫu).
   * Trên `haberman`: `Standard Paper Baseline (NN+SVM)` đạt 74.52% ± 5.31% (so với 90.323% ± 0.000% của bài báo, lệch -15.81 pp) và `DDCL-6 Ensemble` đạt 68.39% ± 6.58% (so với 96.774% ± 0.000% của bài báo, lệch -28.39 pp).
   * **Về hiện tượng độ lệch chuẩn ± 0.000% trong bài báo gốc**: Bài báo gốc công bố SD = ± 0.000% cho cả Standard Ensemble và DDCL Ensemble. Để bảo đảm tính nghiêm cẩn khoa học, nhóm KHÔNG đưa ra nhận định nhân quả võ đoán về việc tác giả dùng single test split cố định hay giả thuyết SVM overfitting/soft-margin khi chưa kiểm chứng; mọi câu hỏi về phương pháp phân chia dữ liệu và đánh giá thực tế của tác giả sẽ được kiểm chứng có đối chứng trong Phase F (Audit mã nguồn tác giả).
-  * `banknote`: Không xuất hiện trong Table 3 của bài báo gốc; ở mốc 600 epochs có đúng **0 evaluations** trên Banknote (kết quả Banknote được khảo sát độc lập ở mốc 200 epochs).
+  * `banknote`: Không xuất hiện trong 6 tập dữ liệu của Table 3 bài báo gốc; ở mốc 600 epochs có đúng **0 evaluations** trên Banknote (kết quả Banknote được khảo sát mở rộng độc lập ở mốc 200 epochs).
 
 ---
 
-### 2.4. Kết quả Thí nghiệm R3 Final (Sensitivity Analysis trên $\lambda_{initial}$: 180 runs qua 30 seeds)
+### 2.4. Kết quả Thí nghiệm R3 Final (Sensitivity Analysis trên $\lambda_{initial}$: 180 kết quả qua 30 seeds, 120 training runs mới)
 
 | Dataset | Ngưỡng $\lambda_{initial}$ | Seeds | Epochs | Accuracy trung bình | SD mẫu (ddof=1) | Macro-F1 trung bình | Optimizer Steps |
 |---|---|---|---|---|---|---|---|
@@ -142,14 +142,49 @@ Cập nhật lần cuối: 2026-11-06 (Hoàn thiện các kiểm chứng chuẩn
 |---|---|---|---|---|
 | **Training Runs** | R1 Headline (200 ep) | 3 datasets × 6 strategies × 30 seeds | **540 runs** | Huấn luyện mạng MLP 200 epochs thực sự. |
 | **Training Runs** | R2 Thành viên mới (200 ep) | 3 datasets × 30 seeds × [1 SVM + 6 Controlled NNs] | **630 runs** | Huấn luyện mới mô hình SVM và 6 mạng kiểm soát. |
-| **Training Runs** | R2 Độc lập (600 ep) | 2 datasets × 30 seeds × [6 DDCL NNs + 1 SVM + 6 Controlled NNs] | **780 runs** | Huấn luyện độc lập 600 epochs đối chiếu Table 3. |
-| **Training Runs** | R3 Sensitivity (200 ep) | 2 datasets × 3 $\lambda$ × 30 seeds | **180 runs** | Huấn luyện mạng MLP khảo sát độ nhạy cảm $\lambda$. |
-| **Tổng Training Runs** | **Toàn bộ Phase E Final** | **Toàn bộ các lượt huấn luyện mô hình** | **2,130 runs** | *Không bao gồm 78 runs của giai đoạn Pilot.* |
+| **Training Runs** | R2 Độc lập (600 ep) | 2 datasets phân công cá nhân × 30 seeds × [6 DDCL NNs + 1 SVM + 6 Controlled NNs] | **780 runs** | Huấn luyện độc lập 600 epochs trên phần cá nhân phụ trách. |
+| **Training Runs** | R3 Sensitivity (200 ep) | 2 datasets × 2 mốc mới $\lambda \in \{0.2, 0.6\}$ × 30 seeds | **120 runs** | Huấn luyện mới mạng MLP khảo sát độ nhạy cảm $\lambda$. |
+| **Tổng Training Runs** | **Toàn bộ Phase E Final** | **Toàn bộ các lượt huấn luyện mô hình (không đếm trùng)** | **2,070 runs** | *540 + 630 + 780 + 120 (không tính 78 runs Pilot).* |
 | **Ensemble Evaluations** | R2 Final (200 ep) | 3 datasets × 3 cấu hình × 30 seeds | **270 evals** | Bỏ phiếu đa số / tổ hợp dự đoán trên test set. |
-| **Ensemble Evaluations** | R2 Table 3 (600 ep) | 2 datasets × 3 cấu hình × 30 seeds | **180 evals** | Đánh giá tổ hợp độc lập 600 epochs (`banknote` = 0). |
-| **Tổng Ensemble Evaluations**| **Toàn bộ Phase E Final** | **Toàn bộ lượt đánh giá tổ hợp kiểm thử** | **450 evals** | *Không bao gồm 9 evaluations của Pilot.* |
-| **Reused Predictions** | R2 `ddcl_6strategy` (200 ep) | 3 datasets × 30 seeds | **90 evals** | Tái sử dụng 100% dự đoán test set từ 540 runs R1. |
-| **Reused Predictions** | R2 `standard_nn_svm` (200 ep)| 3 datasets × 30 seeds | **90 evals** | Tái sử dụng dự đoán test set `no_curriculum` từ R1. |
+| **Ensemble Evaluations** | R2 Table 3 (600 ep) | 2 datasets phân công cá nhân × 3 cấu hình × 30 seeds | **180 evals** | Đánh giá tổ hợp độc lập 600 epochs (`banknote` = 0). |
+| **Tổng Ensemble Evaluations**| **Toàn bộ Phase E Final** | **Toàn bộ lượt đánh giá tổ hợp kiểm thử** | **450 evals** | *Không bao gồm 27 evaluations của Pilot (3 datasets × 3 cấu hình × 3 seeds = 27 files json trên đĩa).* |
+| **Reused Predictions / Runs**| R2 `ddcl_6strategy` (200 ep)| 3 datasets × 30 seeds | **90 evals** | Tái sử dụng 100% dự đoán test set từ 540 runs R1. |
+| **Reused Predictions / Runs**| R2 `standard_nn_svm` (200 ep)| 3 datasets × 30 seeds | **90 evals** | Tái sử dụng dự đoán test set `no_curriculum` từ R1. |
+| **Reused Predictions / Runs**| R3 Sensitivity $\lambda=0.4$ | 2 datasets × 30 seeds | **60 runs** | Tái sử dụng 60 runs của R1 `sp_ddcl_point` (mặc định $\lambda=0.4$). |
+| **Tổng Reused Results** | **Toàn bộ Phase E Final** | **Toàn bộ lượt tái sử dụng kết quả / runs** | **240 lượt** | *90 + 90 + 60 = 240 lượt tái sử dụng.* |
+
+> [!NOTE]
+> - **Phân định rõ ràng**: 3 datasets (`Haberman`, `New-Thyroid`, `Banknote`) là phần việc do cá nhân tôi phụ trách và đã hoàn tất 100%. Phạm vi và tiến độ của toàn nhóm đối với các datasets/thí nghiệm còn lại trong bài báo chưa được xác nhận đầy đủ. Tuyệt đối không tự ý thu hẹp phạm vi đồ án của nhóm theo phần việc cá nhân.
+> - **Trạng thái tính toán**: Phần tính toán của cá nhân đã hoàn tất 100% trong phạm vi đã giao; public W&B dashboard vẫn ở trạng thái **PENDING** (toàn bộ logs được lưu trữ cục bộ đầy đủ qua `trace.jsonl` và `metrics.json`). Dừng tại Phase E, không khởi chạy thêm bất kỳ thí nghiệm training nào.
+
+---
+
+### 2.7. Bảng Bàn giao Nhiệm vụ Thực nghiệm (Handover Matrix)
+
+| Tập dữ liệu (Dataset) | Nguồn tham chiếu Paper / Giao thức | Thí nghiệm | Người phụ trách | Trạng thái | Ghi chú Artifacts |
+|---|---|---|---|---|---|
+| **Haberman's Survival** | Table 1 (p. 8) | R1 Headline (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 180 runs (`outputs/runs_final/haberman_*`) |
+| **Haberman's Survival** | Ngân sách bổ sung của nhóm | R2 Ensemble (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/ensembles_final/*/haberman_*`) |
+| **Haberman's Survival** | Table 3 (p. 9) | R2 Ensemble (600 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/ensembles_600/*/haberman_*`) |
+| **Haberman's Survival** | Phân tích bổ sung của nhóm | R3 Sensitivity (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/sensitivity_final/`) |
+| **New-Thyroid** | Table 1 (p. 8) | R1 Headline (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 180 runs (`outputs/runs_final/new_thyroid_*`) |
+| **New-Thyroid** | Ngân sách bổ sung của nhóm | R2 Ensemble (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/ensembles_final/*/new_thyroid_*`) |
+| **New-Thyroid** | Table 3 (p. 9) | R2 Ensemble (600 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/ensembles_600/*/new_thyroid_*`) |
+| **New-Thyroid** | Phân tích bổ sung của nhóm | R3 Sensitivity (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/sensitivity_final/`) |
+| **Banknote** | Table 2 (p. 9) | R1 Headline (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 180 runs (`outputs/runs_final/banknote_*`) |
+| **Banknote** | Ngân sách bổ sung của nhóm | R2 Ensemble (200 ep, 30 seeds) | Người dùng (User) | **Hoàn tất tính toán** | 90 evals (`outputs/ensembles_final/*/banknote_*`) |
+| **Banknote** | Paper Table 3 (không có) | R2 Ensemble (600 ep) | Người dùng (User) | **Không áp dụng** | Không thuộc Table 3 bài báo gốc |
+| **Breast Cancer Wisconsin (Diagnostic)** | Table 1 & Table 3 | R1, R2 (600 ep) | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+| **Breast Cancer Wisconsin (Diagnostic)** | Phân tích bổ sung của nhóm | R3 Sensitivity | Chưa xác nhận người phụ trách | **Chờ thống nhất** | Chờ thống nhất toàn nhóm có chạy R3 hay không |
+| **Cancer** | Table 1 & Table 3 | R1, R2 (600 ep) | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+| **Cancer** | Phân tích bổ sung của nhóm | R3 Sensitivity | Chưa xác nhận người phụ trách | **Chờ thống nhất** | Chờ thống nhất toàn nhóm có chạy R3 hay không |
+| **Liver Disorder** | Table 1 & Table 3 | R1, R2 (600 ep) | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+| **Liver Disorder** | Phân tích bổ sung của nhóm | R3 Sensitivity | Chưa xác nhận người phụ trách | **Chờ thống nhất** | Chờ thống nhất toàn nhóm có chạy R3 hay không |
+| **Pima Indians Diabetes** | Table 1 & Table 3 | R1, R2 (600 ep) | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+| **Pima Indians Diabetes** | Phân tích bổ sung của nhóm | R3 Sensitivity | Chưa xác nhận người phụ trách | **Chờ thống nhất** | Chờ thống nhất toàn nhóm có chạy R3 hay không |
+| **ISOLET** | Table 2 (p. 9) | R1 Stand-alone | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+| **Optical Digits** | Table 2 (p. 9) | R1 Stand-alone | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
+| **Clean1** | Table 2 (p. 9) | R1 Stand-alone | Chưa xác nhận người phụ trách | **Chưa xác nhận** | Chờ tổng hợp toàn nhóm |
 
 #### Trạng thái Dịch vụ Công khai (Public Evidence):
 1. **Hosted Hugging Face Dataset**:
@@ -168,9 +203,10 @@ Cập nhật lần cuối: 2026-11-06 (Hoàn thiện các kiểm chứng chuẩn
 1. **Tuyệt đối không vi phạm nguyên tắc độc lập**:
    - Trong suốt toàn bộ Phase A, B, C, D, E, nhóm **chưa từng clone hay đọc bất kỳ dòng code nào** từ kho lưu trữ của tác giả (`https://github.com/ECOLS-research-group/DDCL`).
    - Toàn bộ kết quả Pilot và Final đạt được 100% từ việc hiện thực hóa độc lập các phương trình và mô tả trong bài báo gốc và file đặc tả thiết kế.
-2. **Sẵn sàng chuyển giao sang Phase F**:
-   - Phase E đã hoàn thành đầy đủ cả pilot và final scope được giao.
-   - Khi người dùng gửi lệnh tiếp tục, hệ thống sẽ tiến hành checkpoint git và chuyển sang Phase F (Audit mã nguồn tác giả).
+2. **Trạng thái Gate Phase E**:
+   - Phần tính toán và thực nghiệm độc lập của Phase E đối với phần việc cá nhân phụ trách (3 datasets `Haberman`, `New-Thyroid`, `Banknote`) đã hoàn tất 100%. Phạm vi và tiến độ của toàn nhóm đối với các datasets/thí nghiệm còn lại trong bài báo chưa được xác nhận đầy đủ.
+   - Trạng thái Public W&B Dashboard vẫn là **PENDING** (toàn bộ logs được lưu trữ cục bộ đầy đủ qua `trace.jsonl` và `metrics.json`).
+   - Dừng chính xác tại Phase E, không khởi chạy thêm bất kỳ training nào. Chờ lệnh từ người dùng trước khi chuyển sang Phase F (Audit mã nguồn tác giả).
 
 ---
 

@@ -12,7 +12,28 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import time
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
+
+DEFAULT_WANDB_PROJECT = "dynamic-ddcl"
+
+
+def build_run_tags(
+    tracking_cfg: Mapping[str, Any] | None,
+    dataset_id: str,
+    strategy: str,
+) -> list[str]:
+    """Build the W&B tag list for one run.
+
+    Static tags (lab, stage, experiment type) come from ``tracking.tags`` in the config.
+    The dataset and strategy tags are added per run. Order is kept and duplicates removed.
+    """
+    static_tags = list((tracking_cfg or {}).get("tags") or [])
+    tags: list[str] = []
+    for tag in [*static_tags, dataset_id, strategy]:
+        tag = str(tag)
+        if tag and tag not in tags:
+            tags.append(tag)
+    return tags
 
 
 # Explicit allowed config keys to prevent leaking sensitive environment variables
@@ -67,8 +88,10 @@ class ExperimentTracker:
         Resolved experiment configuration.
     wandb_mode : str, default='offline'
         Mode for W&B tracking: 'online', 'offline', or 'disabled'.
-    wandb_project : str, default='DDDCL_Reproducibility'
-    wandb_entity : str | None, default=None
+    wandb_project : str, default='dynamic-ddcl'
+        One shared project for the whole course work (see docs/11_TRACKING_REPORTS.md).
+    tags : Sequence[str] | None, default=None
+        Labels attached to the W&B run (lab, stage, dataset, strategy, experiment type).
     """
 
     def __init__(
@@ -76,8 +99,8 @@ class ExperimentTracker:
         run_dir: str | Path,
         config: Mapping[str, Any],
         wandb_mode: str = "offline",
-        wandb_project: str = "DDDCL_Reproducibility",
-        wandb_entity: str | None = None,
+        wandb_project: str = DEFAULT_WANDB_PROJECT,
+        tags: Sequence[str] | None = None,
     ) -> None:
         self.run_dir = Path(run_dir)
         self.run_dir.mkdir(parents=True, exist_ok=True)
@@ -85,7 +108,7 @@ class ExperimentTracker:
         self.config = filter_config_for_tracking(config)
         self.wandb_mode = wandb_mode.lower()
         self.wandb_project = wandb_project
-        self.wandb_entity = wandb_entity
+        self.tags = list(tags) if tags else []
 
         self._wandb_run = None
         self._wandb_url: str | None = None
@@ -102,9 +125,9 @@ class ExperimentTracker:
             run_id = str(self.config.get("run_id", "run"))
             self._wandb_run = wandb.init(
                 project=self.wandb_project,
-                entity=self.wandb_entity,
                 id=run_id,
                 resume="allow",
+                tags=self.tags or None,
                 mode=self.wandb_mode,
                 config=self.config,
                 dir=str(self.run_dir),

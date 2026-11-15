@@ -2,7 +2,19 @@
 
 ## Tracking
 
-Một W&B project public cho cả reproduction và empirics. Tags tối thiểu `reproduction|empirics`, `pilot|final`, protocol_id, dataset_id, strategy. Run name chỉ là label, run_id là hash ổn định và W&B id lưu riêng để resume.
+Một W&B project public cho cả reproduction và empirics, tên `dynamic-ddcl` (cấu hình bằng `tracking.project` trong YAML, mặc định cũng là `dynamic-ddcl`; run vào entity mặc định của tài khoản W&B đang đăng nhập). Run name chỉ là label, run_id là hash ổn định và W&B id lưu riêng để resume.
+
+Tags tối thiểu của mỗi run, theo thứ tự ghi trên W&B:
+
+| Loại tag | Giá trị | Nguồn |
+|---|---|---|
+| Lab | `reproduction` hoặc `empirics` | `tracking.tags` trong YAML |
+| Giai đoạn | `pilot` hoặc `final` | `tracking.tags` trong YAML |
+| Loại thí nghiệm | `headline` (R1), `ensemble` (R2), `sensitivity` (R3) | `tracking.tags` trong YAML |
+| Dataset | `haberman`, `new_thyroid`, `banknote`… | tự thêm theo `dataset_id` của run |
+| Strategy | `no_curriculum`, `ddcl_density`, `ddcl_point`, `self_paced`, `sp_ddcl_density`, `sp_ddcl_point` | tự thêm theo `strategy` của run |
+
+Ví dụ `banknote_ddcl_density_s0` ở R1 chính thức: `reproduction`, `final`, `headline`, `banknote`, `ddcl_density`. Ba tag đầu là tag tĩnh viết trong `tracking.tags`; hai tag sau do runner (`build_run_tags` trong `src/dddcl/tracking.py`) thêm cho từng run. Tag trùng bị bỏ. `protocol_id` và seed không làm tag mà nằm trong config của run (bản trước của tài liệu này yêu cầu `protocol_id` là tag; đã bỏ để tránh trùng với config). Với R2, tag strategy lấy theo tên cấu hình tổ hợp (ví dụ `ddcl_6strategy`, `standard_nn_svm`). Hiện chỉ R1 chạy qua `execute_single_run` nên có tracker; script R2 và R3 chưa gắn tracker, nên các tag `ensemble` và `sensitivity` chỉ dùng được khi kết quả của chúng được đẩy lên bằng script sync riêng.
 
 Config allowlist: dataset snapshot/revision+hash, split fingerprint, seeds, model/backbone/optimizer, epochs/batch policy, geometry/KDE/SMOTE/pace/tie settings, Git commit+dirty flag/diff hash, lock hash, OS/Python/backend/device, budget. **Không log os.environ hoặc .env nguyên file.**
 

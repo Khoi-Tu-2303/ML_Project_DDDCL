@@ -25,7 +25,7 @@ from .data.preprocess import ProcessedSplit, prepare_processed_split
 from .data.splits import SplitBundle, load_split
 from .metrics import compute_classification_metrics, save_metrics_json, save_predictions_csv
 from .models.mlp import create_mlp_model
-from .tracking import ExperimentTracker
+from .tracking import DEFAULT_WANDB_PROJECT, ExperimentTracker, build_run_tags
 from .training.loop import create_curriculum_batches, evaluate_dataset, train_dddcl_model
 
 
@@ -292,6 +292,8 @@ def execute_single_run(
         run_dir=run_path,
         config=resolved_config,
         wandb_mode=wandb_mode,
+        wandb_project=tracking_cfg.get("project") or DEFAULT_WANDB_PROJECT,
+        tags=build_run_tags(tracking_cfg, dataset_id, strategy),
     )
 
     start_time = time.time()

@@ -12,6 +12,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 import random
+import time
 from typing import Any, Mapping
 import numpy as np
 import torch
@@ -91,8 +92,32 @@ def save_checkpoint(
 
     # Save to temp file first, then atomically replace
     torch.save(payload, temp_path)
-    os.replace(temp_path, path)
+    _replace_with_retry(temp_path, path)
     return path
+
+
+def _replace_with_retry(
+    src: Path,
+    dst: Path,
+    attempts: int = 10,
+    base_delay: float = 0.05,
+) -> None:
+    """``os.replace`` with retry for transient Windows file locks.
+
+    On Windows, antivirus scanners, cloud-sync clients or indexers may briefly
+    hold a handle on ``dst``/``src`` right after it is written, making
+    ``os.replace`` fail with ``PermissionError`` (WinError 5/32). The lock is
+    normally released within tens of milliseconds, so retry with a growing delay.
+    The final failure is re-raised unchanged.
+    """
+    for attempt in range(attempts):
+        try:
+            os.replace(src, dst)
+            return
+        except PermissionError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(min(base_delay * (2**attempt), 1.0))
 
 
 def load_checkpoint(

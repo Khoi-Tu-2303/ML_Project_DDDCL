@@ -1,9 +1,9 @@
 schema_version: 1
 status: official_final_benchmark
 protocol_id: paper_interpretation_clean_v1
-runs_dir: outputs/runs_wandb_test
+runs_dir: outputs/runs_final_wandb
 data_config: configs/data_hf.json
-datasets: [haberman, new_thyroid, banknote]
+datasets: [haberman, new_thyroid, banknote, breast_cancer_diagnostic, cancer, clean1, liver, pima, optical_digits, isolet]
 strategies: [no_curriculum, ddcl_density, ddcl_point, self_paced, sp_ddcl_density, sp_ddcl_point]
 seeds:
   - 0
@@ -38,7 +38,7 @@ seeds:
   - 29
 device: cpu
 deterministic: true
-epochs: 10
+epochs: 200
 batch_size: 32
 drop_last: false
 optimizer:
@@ -59,7 +59,7 @@ geometry:
   input_space: raw_features
   normalization: class_distance_l2
 tracking:
-  mode: offline         # disabled | offline | online
+  mode: offline
   project: dynamic-ddcl # one shared W&B project for all labs
   # Static tags: lab, stage, experiment type. dataset and strategy tags are added per run.
   tags: [reproduction, final, headline]

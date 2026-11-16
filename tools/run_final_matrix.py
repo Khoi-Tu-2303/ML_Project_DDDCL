@@ -4,6 +4,7 @@ Usage:
   python tools/run_final_matrix.py --dataset haberman
   python tools/run_final_matrix.py --dataset new_thyroid
   python tools/run_final_matrix.py --dataset banknote
+  python tools/run_final_matrix.py --dataset <any dataset id in the config's `datasets`>
   python tools/run_final_matrix.py --dataset all
 """
 
@@ -27,6 +28,8 @@ def run_dataset_final(
     release_dir = Path("hf_release")
 
     datasets = [target_dataset] if target_dataset != "all" else cfg.get("datasets", [])
+    if target_dataset != "all" and target_dataset not in cfg.get("datasets", []):
+        sys.exit(f"[-] Dataset '{target_dataset}' is not in the config's datasets: {cfg.get('datasets', [])}")
     strategies = cfg.get("strategies", [])
     seeds = cfg.get("seeds", list(range(30)))
 
@@ -39,6 +42,7 @@ def run_dataset_final(
 
     completed_count = 0
     skipped_count = 0
+    failed: list[str] = []
     t_start = time.time()
 
     run_index = 0
@@ -53,16 +57,21 @@ def run_dataset_final(
                     continue
 
                 t0 = time.time()
-                res = execute_single_run(
-                    raw_config=cfg,
-                    dataset_id=d,
-                    strategy=s,
-                    seed=seed,
-                    runs_dir=runs_dir,
-                    splits_dir=splits_dir,
-                    release_dir=release_dir,
-                    resume=resume,
-                )
+                try:
+                    res = execute_single_run(
+                        raw_config=cfg,
+                        dataset_id=d,
+                        strategy=s,
+                        seed=seed,
+                        runs_dir=runs_dir,
+                        splits_dir=splits_dir,
+                        release_dir=release_dir,
+                        resume=resume,
+                    )
+                except Exception as exc:  # keep the batch going; re-run to retry
+                    failed.append(run_id)
+                    print(f"[{run_index:3d}/{total_runs:3d}] {run_id:<32} -> FAILED: {type(exc).__name__}: {exc}")
+                    continue
                 dur = time.time() - t0
                 completed_count += 1
                 acc = res.get("test_accuracy", 0.0) * 100.0
@@ -74,14 +83,20 @@ def run_dataset_final(
     print(f"[+] DATASET '{target_dataset}' RUNS COMPLETE:")
     print(f"    - Newly completed: {completed_count}")
     print(f"    - Previously completed: {skipped_count}")
+    print(f"    - Failed: {len(failed)}")
     print(f"    - Total duration: {elapsed:.1f}s ({elapsed/60:.1f} mins)")
     print("=" * 65)
+    if failed:
+        print("[!] Failed runs (re-run the same command to retry them):")
+        for run_id in failed:
+            print(f"    - {run_id}")
+        sys.exit(1)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Run Final R1 Benchmark Matrix")
     parser.add_argument("--config", type=Path, default=Path("configs/final_r1.yaml"), help="Config file")
-    parser.add_argument("--dataset", type=str, default="all", choices=["haberman", "new_thyroid", "banknote", "all"])
+    parser.add_argument("--dataset", type=str, default="all", help="A dataset id listed in the config's `datasets`, or 'all'")
     parser.add_argument("--no-resume", action="store_true", help="Force re-run")
     args = parser.parse_args()
 

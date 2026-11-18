@@ -92,6 +92,10 @@ ARCH_PRESETS: dict[str, dict | None] = {
             "layers": [(352, "relu"), (512, "tanh"), (16, "relu"), (16, "relu"), (16, "relu")],
             "dropout_before_output": 0.1,
         },
+        "banknote": {
+            "layers": [(480, "tanh")],
+            "dropout_before_output": 0.4,
+        },
     },
 }
 

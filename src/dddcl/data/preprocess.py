@@ -62,10 +62,17 @@ def prepare_processed_split(
     bundle: DatasetBundle,
     split: SplitBundle,
     scaler_type: str = "standard",
+    train_order: str = "split",
 ) -> ProcessedSplit:
     """
     Extract train/validation/test partitions by row ID, fit scaler STRICTLY on train,
     and transform all partitions. Returns ProcessedSplit with both raw and scaled representations.
+
+    train_order:
+      - "split": keep the train ID order stored in the split file (default).
+      - "class_blocks": sort train rows by (label, row position in the source file), so samples
+        of the same class are contiguous and keep their file order within the class.
+        Validation and test order are never changed.
     """
     split.validate_integrity(bundle)
 
@@ -74,8 +81,17 @@ def prepare_processed_split(
     cols = bundle.feature_columns
     y_col = bundle.label_column
 
+    if train_order == "split":
+        train_ids = list(split.train_ids)
+    elif train_order == "class_blocks":
+        file_pos = {rid: i for i, rid in enumerate(bundle.frame[bundle.row_id_column])}
+        labels = df[y_col]
+        train_ids = sorted(split.train_ids, key=lambda rid: (int(labels[rid]), file_pos[rid]))
+    else:
+        raise ValueError(f"Unknown train_order: '{train_order}'. Choose from 'split', 'class_blocks'.")
+
     # Extract raw arrays
-    df_train = df.loc[split.train_ids]
+    df_train = df.loc[train_ids]
     df_val = df.loc[split.validation_ids]
     df_test = df.loc[split.test_ids]
 
@@ -107,7 +123,7 @@ def prepare_processed_split(
         feature_names=cols,
         X_train_scaled=X_train_scaled,
         y_train=y_train,
-        train_ids=list(split.train_ids),
+        train_ids=train_ids,
         X_val_scaled=X_val_scaled,
         y_val=y_val,
         val_ids=list(split.validation_ids),

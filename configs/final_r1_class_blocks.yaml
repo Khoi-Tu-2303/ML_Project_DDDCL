@@ -1,0 +1,67 @@
+schema_version: 1
+status: class_blocks_order_rerun
+protocol_id: paper_interpretation_clean_v1
+runs_dir: outputs/runs_final_class_blocks
+data_config: configs/data_hf.json
+datasets: [haberman, new_thyroid, banknote, breast_cancer_diagnostic, cancer, clean1, liver, pima, optical_digits, isolet]
+strategies: [ddcl_point, sp_ddcl_point]
+# Train rows sorted by (label, file row position): same-class samples contiguous in each epoch
+# and inside each density bin. Point strategies are not part of this rerun.
+train_order: class_blocks
+seeds:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 26
+  - 27
+  - 28
+  - 29
+device: cpu
+deterministic: true
+epochs: 200
+batch_size: 32
+drop_last: false
+optimizer:
+  name: adam
+  lr: 0.001
+  weight_decay: 0.0
+split:
+  train: 0.7
+  validation: 0.2
+  test: 0.1
+  stratify: true
+spl:
+  lambda_initial: 0.4
+  lambda_max: 0.6
+  growth: 1.1
+  empty_easy: min_loss_batch
+geometry:
+  input_space: raw_features
+  normalization: class_distance_l2
+tracking:
+  mode: offline
+  project: dynamic-ddcl # one shared W&B project for all labs
+  tags: [reproduction, final, headline, class_blocks]

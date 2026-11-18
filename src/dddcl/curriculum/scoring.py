@@ -44,6 +44,7 @@ def create_curriculum(
     bin_assignments: np.ndarray,
     seed: int = 42,
     resampling_report: Optional[Dict[str, Any]] = None,
+    keep_input_order: bool = False,
 ) -> CurriculumResult:
     """
     Create ordered train IDs and scores for one of the 6 strategies:
@@ -53,6 +54,11 @@ def create_curriculum(
     - self_paced (uses random base order, dynamic pace in training)
     - sp_ddcl_density (uses density base order, dynamic pace in training)
     - sp_ddcl_point (uses point base order, dynamic pace in training)
+
+    keep_input_order=True keeps the order of `sample_ids` instead of reordering it:
+    no_curriculum/self_paced skip the seeded permutation, and ddcl_density/sp_ddcl_density
+    keep the input order inside each bin instead of sorting by distance. Point strategies
+    are unaffected.
     """
     n_samples = len(sample_ids)
     if len(normalized_distances) != n_samples or len(bin_assignments) != n_samples:
@@ -74,10 +80,13 @@ def create_curriculum(
         raise ValueError(f"Unknown strategy: '{strategy}'. Supported: {sorted(valid_strategies)}")
 
     if strategy in {"no_curriculum", "self_paced"}:
-        # Fixed pseudo-random permutation derived from seed
-        rng = np.random.RandomState(seed)
-        perm = rng.permutation(n_samples)
-        ordered_ids = [sample_ids[i] for i in perm]
+        if keep_input_order:
+            ordered_ids = list(sample_ids)
+        else:
+            # Fixed pseudo-random permutation derived from seed
+            rng = np.random.RandomState(seed)
+            perm = rng.permutation(n_samples)
+            ordered_ids = [sample_ids[i] for i in perm]
         scores = {sid: float(rank) for rank, sid in enumerate(ordered_ids)}
 
     elif strategy in {"ddcl_point", "sp_ddcl_point"}:
@@ -105,14 +114,19 @@ def create_curriculum(
         current_rank = 0
         for b in sorted_bins:
             samples_in_bin = bin_to_samples[b]
-            samples_in_bin.sort(key=lambda s: (s[1], str(s[0])))
+            if not keep_input_order:
+                samples_in_bin.sort(key=lambda s: (s[1], str(s[0])))
             density_score = float(bin_counts[b])
             for sid, _ in samples_in_bin:
                 ordered_ids.append(sid)
                 scores[sid] = density_score  # higher density = higher score = easier
                 current_rank += 1
 
-    policy_hash = compute_policy_hash(strategy, {"seed": seed, "n_samples": n_samples})
+    hash_params: Dict[str, Any] = {"seed": seed, "n_samples": n_samples}
+    if keep_input_order:
+        # Added only when enabled so hashes of existing runs stay unchanged
+        hash_params["keep_input_order"] = True
+    policy_hash = compute_policy_hash(strategy, hash_params)
 
     return CurriculumResult(
         strategy=strategy,

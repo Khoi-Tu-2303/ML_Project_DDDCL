@@ -210,3 +210,38 @@ def test_split_serialization_roundtrip(tmp_path, haberman_bundle):
     assert loaded_split.test_ids == split.test_ids
     assert loaded_split.dataset_fingerprint == split.dataset_fingerprint
 
+
+
+# Class-block train order
+def test_class_blocks_train_order(haberman_bundle):
+    split = create_stratified_split(haberman_bundle, seed=0)
+    base = prepare_processed_split(haberman_bundle, split, train_order="split")
+    blocks = prepare_processed_split(haberman_bundle, split, train_order="class_blocks")
+
+    # Labels are contiguous by class (non-decreasing)
+    assert np.all(np.diff(blocks.y_train) >= 0)
+
+    # Within each class, rows keep their order in the source file
+    file_pos = {rid: i for i, rid in enumerate(haberman_bundle.row_ids)}
+    for c in np.unique(blocks.y_train):
+        pos = [file_pos[rid] for rid, y in zip(blocks.train_ids, blocks.y_train) if y == c]
+        assert pos == sorted(pos)
+
+    # Same train set, arrays aligned with IDs
+    assert set(blocks.train_ids) == set(split.train_ids)
+    idx = {rid: i for i, rid in enumerate(base.train_ids)}
+    order = [idx[rid] for rid in blocks.train_ids]
+    np.testing.assert_array_equal(blocks.X_train_raw, base.X_train_raw[order])
+    np.testing.assert_array_equal(blocks.y_train, base.y_train[order])
+
+    # Validation/test untouched, scaler equivalent
+    assert blocks.val_ids == base.val_ids and blocks.test_ids == base.test_ids
+    np.testing.assert_allclose(blocks.X_test_scaled, base.X_test_scaled, rtol=1e-5, atol=1e-6)
+    np.testing.assert_allclose(blocks.scaler.mean_, base.scaler.mean_, rtol=1e-6)
+    np.testing.assert_allclose(blocks.scaler.scale_, base.scaler.scale_, rtol=1e-6)
+
+
+def test_unknown_train_order_rejected(haberman_bundle):
+    split = create_stratified_split(haberman_bundle, seed=0)
+    with pytest.raises(ValueError):
+        prepare_processed_split(haberman_bundle, split, train_order="shuffled")

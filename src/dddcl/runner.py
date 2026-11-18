@@ -114,6 +114,7 @@ def prepare_curriculum_for_run(
     seed: int,
     smote_policy: str = "none",
     n_levels: int = 5,
+    keep_input_order: bool = False,
 ) -> tuple[CurriculumResult, np.ndarray, np.ndarray, list[str]]:
     """Compute geometry, partitions, optional SMOTE, and ordering for one run."""
     # 1. Centroids and distances computed on raw features according to D04
@@ -144,6 +145,7 @@ def prepare_curriculum_for_run(
         bin_assignments=resampled.bin_assignments,
         seed=seed,
         resampling_report=resampled.resampling_report,
+        keep_input_order=keep_input_order,
     )
 
     return curr_result, resampled.X, resampled.y, resampled.sample_ids
@@ -213,8 +215,11 @@ def execute_single_run(
         )
     split_bundle = load_split(split_bundle_path, bundle=ds_bundle)
 
+    # Train row order: "split" (default) or "class_blocks" (same-class samples contiguous, file order within class)
+    train_order = str(raw_config.get("train_order", "split"))
+
     # Preprocess split (StandardScaler fit on train only!)
-    processed = prepare_processed_split(ds_bundle, split_bundle)
+    processed = prepare_processed_split(ds_bundle, split_bundle, train_order=train_order)
 
     # Resolve run parameters
     epochs = int(raw_config.get("epochs", 5))
@@ -250,6 +255,9 @@ def execute_single_run(
         "manifest_hash": ds_bundle.manifest_hash,
         "dataset_fingerprint": split_bundle.dataset_fingerprint,
     }
+    if train_order != "split":
+        # Recorded only when non-default so fingerprints of existing runs stay unchanged
+        resolved_config["train_order"] = train_order
     run_fp = compute_run_fingerprint(resolved_config)
 
     # Save resolved config
@@ -265,6 +273,7 @@ def execute_single_run(
         strategy=strategy,
         seed=seed,
         smote_policy=smote_policy,
+        keep_input_order=(train_order == "class_blocks"),
     )
 
     batches = create_curriculum_batches(

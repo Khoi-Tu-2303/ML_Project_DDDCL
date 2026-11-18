@@ -252,3 +252,39 @@ def test_real_dataset_curriculum_strategies():
         assert set(res.ordered_train_ids) == set(split.train_ids)
         assert len(res.scores) == len(X_train)
 
+
+
+# Class-block order: keep_input_order=True must not reorder the input
+@pytest.mark.parametrize("strategy", ["no_curriculum", "self_paced"])
+def test_keep_input_order_baselines(strategy):
+    sample_ids = ["a0", "a1", "a2", "b0", "b1"]
+    dists = np.array([0.5, 0.1, 0.3, 0.2, 0.4])
+    bins = np.array([0, 0, 1, 0, 1])
+    res = create_curriculum(strategy, sample_ids, dists, bins, seed=7, keep_input_order=True)
+    assert res.ordered_train_ids == sample_ids
+
+    default = create_curriculum(strategy, sample_ids, dists, bins, seed=7)
+    assert res.policy_hash != default.policy_hash
+
+
+@pytest.mark.parametrize("strategy", ["ddcl_density", "sp_ddcl_density"])
+def test_keep_input_order_density(strategy):
+    # Input already in class-block order: class A = a*, class B = b*
+    sample_ids = ["a0", "a1", "a2", "a3", "b0", "b1", "b2"]
+    dists = np.array([0.9, 0.1, 0.5, 0.3, 0.8, 0.2, 0.4])
+    bins = np.array([0, 1, 0, 0, 1, 0, 0])  # bin 0: 5 samples, bin 1: 2 samples
+    res = create_curriculum(strategy, sample_ids, dists, bins, keep_input_order=True)
+    # Bins still ordered by count (bin 0 first), input order kept inside each bin
+    assert res.ordered_train_ids == ["a0", "a2", "a3", "b1", "b2", "a1", "b0"]
+
+    default = create_curriculum(strategy, sample_ids, dists, bins)
+    # Default still sorts by distance inside bins
+    assert default.ordered_train_ids == ["b1", "a3", "b2", "a2", "a0", "a1", "b0"]
+
+
+def test_keep_input_order_does_not_affect_point():
+    sample_ids = ["a0", "a1", "b0"]
+    dists = np.array([0.8, 0.1, 0.5])
+    bins = np.array([0, 0, 0])
+    res = create_curriculum("ddcl_point", sample_ids, dists, bins, keep_input_order=True)
+    assert res.ordered_train_ids == ["a1", "b0", "a0"]

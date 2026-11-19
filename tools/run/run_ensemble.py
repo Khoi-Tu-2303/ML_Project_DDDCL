@@ -5,7 +5,7 @@ Evaluates three ensemble paradigms:
 2. Standard Paper Baseline Ensemble (1 NN no_curriculum + 1 SVM RBF)
 3. Controlled 6-NN Ensemble (6 independent random initializations, no curriculum, 200 epochs)
 
-Outputs saved to outputs/ensembles_final/<ensemble_type>/<dataset_id>_s<seed>.json
+Outputs saved to outputs/ensemble/<ensemble_type>/<dataset_id>_s<seed>.json
 """
 
 import argparse
@@ -30,7 +30,7 @@ def run_final_ensembles(
     seeds: list[int],
     methods: list[str],
     runs_dir: Path = Path("outputs/runs_final"),
-    out_dir: Path = Path("outputs/ensembles_final"),
+    out_dir: Path = Path("outputs/ensemble"),
     splits_dir: Path = Path("outputs/splits"),
     rel_dir: Path = Path("hf_release"),
     protocol_id: str = "paper_interpretation_clean_v1",

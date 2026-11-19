@@ -17,9 +17,9 @@ Default mode is read-only: it fetches ONE run, shows how long the call took, whe
 already holds test metrics, which files are already on W&B, and what would be written or uploaded.
 Nothing is written without ``--apply``.
 
-    python tools/update_wandb_summaries.py outputs/runs_final_wandb --project dynamic-ddcl
-    python tools/update_wandb_summaries.py outputs/runs_final_wandb --project dynamic-ddcl --apply
-    python tools/update_wandb_summaries.py outputs/runs_final_wandb --project dynamic-ddcl --apply --upload-files
+    python tools/update_wandb_summaries.py outputs/single_model --project dynamic-ddcl
+    python tools/update_wandb_summaries.py outputs/single_model --project dynamic-ddcl --apply
+    python tools/update_wandb_summaries.py outputs/single_model --project dynamic-ddcl --apply --upload-files
 
 The API key is read like in sync_wandb.py: ``WANDB_API_KEY`` env var, else the ``.env`` file, else
 a previous ``wandb login``. It is never printed. Test metrics come from ``metrics.json`` only; the

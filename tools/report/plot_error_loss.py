@@ -1,10 +1,13 @@
 """Vẽ biểu đồ "Error loss for <dataset>" (mean qua các seed) kèm khung zoom, theo file config.
 
-Dùng:  python tools/plot_error_loss.py configs/plot_error_loss.yaml
-       python tools/plot_error_loss.py configs/plot_error_loss.yaml --output outputs/figures/x.png
+Dùng:  python tools/plot/plot_error_loss.py configs/plot_error_loss.yaml
+       python tools/plot/plot_error_loss.py configs/plot_error_loss.yaml --output outputs/figures/x.png
+       python tools/plot/plot_error_loss.py configs/plot_error_loss.yaml --output-dir outputs/figures/other
 Đầu vào : <runs_dir>/<dataset>_<strategy>_s<seed>/trace.jsonl                 (source: ours, mặc định)
           <author_dir>/<Dataset>/<STRATEGY>/run_XX.json → history["loss"]     (source: author)
-Đầu ra  : config["output"]  (mặc định outputs/figures/r1_error_loss.png)
+Đầu ra  : ảnh ghi vào config["output_dir"] với tên file lấy từ config["output"]
+          (mặc định outputs/figures/r1_error_loss.png). Thứ tự ưu tiên: --output (đường dẫn đầy đủ)
+          > --output-dir / config["output_dir"] (+ tên file của "output") > config["output"].
 
 Config (YAML hoặc JSON) quyết định: dataset nào / panel nào, so sánh chiến lược nào,
 mỗi đường màu gì + nét liền hay đứt, khung zoom ra sao. Xem configs/plot_error_loss.yaml.
@@ -22,7 +25,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]  # project root (this file lives in tools/plot/)
 
 DEFAULT_INSET = {"enabled": True, "xlim": [25, 200], "ylim": None,
                  "rect": [0.33, 0.25, 0.62, 0.52], "connectors": [2, 4]}
@@ -140,10 +143,20 @@ def plot_panel(ax, panel: dict, cfg: dict) -> None:
         mark_inset(ax, axins, loc1=l1, loc2=l2, fc="none", ec="0.7", lw=0.8)
 
 
+def output_path(cfg: dict, output: str | None, output_dir: str | None) -> Path:
+    """--output (full path) > output_dir (+ file name of `output`) > `output` > default."""
+    if output:
+        return resolve(output)
+    out_cfg = cfg.get("output", "outputs/figures/r1_error_loss.png")
+    out_dir = output_dir or cfg.get("output_dir")
+    return resolve(out_dir) / Path(out_cfg).name if out_dir else resolve(out_cfg)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("config", help="file YAML/JSON, vd configs/plot_error_loss.yaml")
-    ap.add_argument("--output", help="ghi đè đường dẫn ảnh đầu ra")
+    ap.add_argument("--output", help="ghi đè đường dẫn ảnh đầu ra (đầy đủ)")
+    ap.add_argument("--output-dir", help="ghi đè output_dir của config (giữ tên file của `output`)")
     args = ap.parse_args()
 
     cfg = load_config(resolve(args.config))
@@ -159,7 +172,7 @@ def main() -> None:
     if cfg.get("suptitle"):
         fig.suptitle(cfg["suptitle"], fontsize=13)
     fig.tight_layout()
-    out = resolve(args.output or cfg.get("output", "outputs/figures/r1_error_loss.png"))
+    out = output_path(cfg, args.output, args.output_dir)
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, facecolor="white")
     print(out)

@@ -1,0 +1,41 @@
+# Config for tools/plot_confusion_matrix.py ("Confusion Matrix for <dataset> / <strategy>").
+# Run: python tools/plot/plot_confusion_matrix.py configs/plot_confusion_matrix.yaml
+#
+# Strategy ids: no_curriculum, self_paced, ddcl_point, ddcl_density, sp_ddcl_point, sp_ddcl_density
+# Dataset ids:  breast_cancer_diagnostic, cancer, clean1, banknote, haberman, liver, pima, new_thyroid,
+#               isolet, optical_digits  (only those with runs in runs_dir)
+
+runs_dir: outputs/runs_final                    # holds <dataset>_<strategy>_s<seed>/metrics.json
+layout: separate                                # separate = one image per panel | grid = all panels in one image
+output_dir: outputs/figures/confusion_matrices  # used when layout: separate
+output: outputs/figures/confusion_matrices.png  # used when layout: grid
+ncols: 2                                        # grid layout only
+dpi: 150
+cmap: viridis
+colorbar: true
+# annot_fontsize: 7                             # null = auto from number of classes
+# figsize: [14, 6]                              # grid: whole image; separate: see figsize_small/large
+figsize_small: [6, 5]                           # <= 15 classes
+figsize_large: [7.5, 6.5]                       # > 15 classes (e.g. ISOLET, 26 classes)
+
+# Which run to plot (global default; each panel can override with its own `select:`):
+#   best      highest test accuracy (ties: lowest seed), like the authors' "best run"
+#   seed:0    a specific seed
+#   sum       sum of all seeds
+select: best
+normalize: null                                 # null = counts | true = by row (recall) | pred | all
+seeds: null                                     # null = all seeds; or e.g. [0, 1, 2]
+
+panels:
+  - dataset: optical_digits
+    strategy: sp_ddcl_density                   # title: "Confusion Matrix for ... / Self-Paced DDCL - Density"
+    # title: "custom title"                     # overrides the title (use \n for a line break)
+    # select: seed:0
+    # normalize: true
+
+  - dataset: isolet
+    strategy: ddcl_density                      # "Curriculum Learning - Density"
+
+  # More examples:
+  # - {dataset: clean1, strategy: sp_ddcl_point, select: sum, normalize: true}
+  # - {dataset: haberman, strategy: no_curriculum, dataset_label: "Haberman", strategy_label: "No Curriculum"}

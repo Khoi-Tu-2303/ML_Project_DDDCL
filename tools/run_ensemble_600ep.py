@@ -7,7 +7,7 @@ Implements the protocol from docs/04_PROTOCOLS.md and Table 3 of Dynamic DDCL (2
   2. Standard Paper Baseline Ensemble (1 NN no_curriculum + 1 SVM RBF)
   3. Controlled 6-NN Ensemble (6 independent random initializations, no curriculum)
 - Deterministic Decision D09 tie-breaking (train class prior -> class label index)
-- Atomic caching: saves to outputs/ensembles_600/<ensemble_type>/<dataset_id>_s<seed>.json
+- Atomic caching: saves to outputs/ensemble_600ep/<ensemble_type>/<dataset_id>_s<seed>.json
 """
 
 import argparse
@@ -274,7 +274,7 @@ def evaluate_seed_600(
 def run_r2_600_matrix(
     datasets: list[str],
     seeds: list[int],
-    out_dir: Path = Path("outputs/ensembles_600"),
+    out_dir: Path = Path("outputs/ensemble_600ep"),
     epochs: int = 600,
 ) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)

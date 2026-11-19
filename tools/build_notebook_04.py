@@ -129,7 +129,7 @@ def create_reproduction_notebook() -> nbf.NotebookNode:
         "### 2a. Giao thức Trung gian R2 (200 Epochs/Member — 30 Seeds)"
     ))
     cells.append(nbf.v4.new_code_cell(
-        "ensembles_final_dir = Path('../outputs/ensembles_final') if Path('../outputs/ensembles_final').exists() else Path('outputs/ensembles_final')\n"
+        "ensembles_final_dir = Path('../outputs/ensemble') if Path('../outputs/ensemble').exists() else Path('outputs/ensemble')\n"
         "df_r2_final = aggregate_r2_ensemble(ensembles_dir=ensembles_final_dir, seeds=list(range(30)), epoch_key='r2_ensemble_200')\n\n"
         "cols_r2 = [\n"
         "    'dataset_id', 'ensemble_type', 'seeds_completed', 'mean_accuracy_pct', 'std_accuracy_ddof1',\n"
@@ -150,12 +150,12 @@ def create_reproduction_notebook() -> nbf.NotebookNode:
         "- Tập `banknote` (từ Table 2) không xuất hiện trong Table 3 của bài báo gốc nên có đúng 0 evaluations ở mốc 600 epochs (Banknote chỉ được nhóm khảo sát mở rộng độc lập ở mốc 200 epochs tại mục 2a)."
     ))
     cells.append(nbf.v4.new_code_cell(
-        "ensembles_600_dir = Path('../outputs/ensembles_600') if Path('../outputs/ensembles_600').exists() else Path('outputs/ensembles_600')\n"
+        "ensembles_600_dir = Path('../outputs/ensemble_600ep') if Path('../outputs/ensemble_600ep').exists() else Path('outputs/ensemble_600ep')\n"
         "if ensembles_600_dir.exists():\n"
         "    df_r2_600 = aggregate_r2_ensemble(ensembles_dir=ensembles_600_dir, seeds=list(range(30)), epoch_key='r2_ensemble_600')\n"
         "    display(df_r2_600[cols_r2])\n"
         "else:\n"
-        "    print('Thư mục ensembles_600 chưa được tạo.')"
+        "    print('Thư mục ensemble_600ep chưa được tạo.')"
     ))
 
     # Cell 8: Markdown Section 2 Chart

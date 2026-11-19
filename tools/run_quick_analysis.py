@@ -71,8 +71,8 @@ PROTECTED_DIRS = {
     "outputs/runs_final",
     "outputs/runs_pilot",
     "outputs/runs",
-    "outputs/ensembles_final",
-    "outputs/ensembles_600",
+    "outputs/ensemble",
+    "outputs/ensemble_600ep",
     "outputs/ensembles",
     "outputs/sensitivity_final",
     "outputs/sensitivity",
@@ -420,7 +420,7 @@ def main() -> None:
     parser.add_argument("--seeds", type=int, default=5, help="Use seeds 0..N-1 (splits must exist)")
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--strategies", default="all", help="Comma-separated strategies or 'all'")
-    parser.add_argument("--config", type=Path, default=Path("configs/final_r1.yaml"))
+    parser.add_argument("--config", type=Path, default=Path("configs/single_model.yaml"))
     parser.add_argument("--splits-dir", default="outputs/splits")
     parser.add_argument("--release-dir", default="hf_release")
     parser.add_argument("--out-dir", type=Path, default=None,

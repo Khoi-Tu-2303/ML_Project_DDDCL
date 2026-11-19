@@ -1,11 +1,11 @@
 """Dedicated CLI script to execute the official R1 Final Benchmark Matrix (30 seeds, 200 epochs).
 
 Usage:
-  python tools/run_final_matrix.py --dataset haberman
-  python tools/run_final_matrix.py --dataset new_thyroid
-  python tools/run_final_matrix.py --dataset banknote
-  python tools/run_final_matrix.py --dataset <any dataset id in the config's `datasets`>
-  python tools/run_final_matrix.py --dataset all
+  python tools/run/run_single_model.py --dataset haberman
+  python tools/run/run_single_model.py --dataset new_thyroid
+  python tools/run/run_single_model.py --dataset banknote
+  python tools/run/run_single_model.py --dataset <any dataset id in the config's `datasets`>
+  python tools/run/run_single_model.py --dataset all
 """
 
 import argparse
@@ -95,7 +95,7 @@ def run_dataset_final(
 
 def main():
     parser = argparse.ArgumentParser(description="Run Final R1 Benchmark Matrix")
-    parser.add_argument("--config", type=Path, default=Path("configs/final_r1.yaml"), help="Config file")
+    parser.add_argument("--config", type=Path, default=Path("configs/single_model.yaml"), help="Config file")
     parser.add_argument("--dataset", type=str, default="all", help="A dataset id listed in the config's `datasets`, or 'all'")
     parser.add_argument("--no-resume", action="store_true", help="Force re-run")
     args = parser.parse_args()

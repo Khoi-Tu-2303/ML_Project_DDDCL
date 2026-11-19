@@ -1,7 +1,7 @@
 schema_version: 1
 status: official_final_benchmark
 protocol_id: paper_interpretation_clean_v1
-runs_dir: outputs/runs_final_wandb
+runs_dir: outputs/single_model
 data_config: configs/data_hf.json
 datasets: [haberman, new_thyroid, banknote, breast_cancer_diagnostic, cancer, clean1, liver, pima, optical_digits, isolet]
 strategies: [no_curriculum, ddcl_density, ddcl_point, self_paced, sp_ddcl_density, sp_ddcl_point]

@@ -1,31 +1,32 @@
-# Cấu hình cho tools/plot_error_loss.py  (biểu đồ "Error loss for <dataset>" có khung zoom).
-# Chạy:  python tools/plot_error_loss.py configs/plot_error_loss.yaml
+# Config for tools/plot_error_loss.py ("Error loss for <dataset>" with a zoom inset).
+# Run: python tools/plot/plot_error_loss.py configs/plot_error_loss.yaml
 #
-# Chiến lược hợp lệ (id): no_curriculum, self_paced, ddcl_point, ddcl_density, sp_ddcl_point, sp_ddcl_density
-# linestyle: solid | dashed | dotted | dashdot   (hoặc "-", "--", ":", "-.")
-# color: tên màu matplotlib hoặc mã hex.
+# Strategy ids: no_curriculum, self_paced, ddcl_point, ddcl_density, sp_ddcl_point, sp_ddcl_density
+# linestyle: solid | dashed | dotted | dashdot   (or "-", "--", ":", "-.")
+# color: matplotlib color name or hex code.
 
-runs_dir: outputs/runs_final_class_blocks          # chứa <dataset>_<strategy>_s<seed>/trace.jsonl
-output: outputs/figures/r1_error_loss_clean1_banknote_block_class.png
-metric: train_loss                      # cột trong trace.jsonl: train_loss | val_loss | ...
+runs_dir: outputs/runs_final_class_blocks          # holds <dataset>_<strategy>_s<seed>/trace.jsonl
+output_dir: outputs/figures             # image goes here; file name comes from `output` (--output-dir overrides)
+output: r1_error_loss_clean1_banknote_block_class.png
+metric: train_loss                      # trace.jsonl column: train_loss | val_loss | ...
 ylabel: Loss
 xlabel: Epoch
 figsize: [15, 5.5]
 dpi: 150
-seeds: null                             # null = tất cả seed; hoặc liệt kê [0, 1, 2]
-band: false                             # true = tô thêm dải ±1 std quanh đường mean
+seeds: null                             # null = all seeds; or e.g. [0, 1, 2]
+band: false                             # true = add a ±1 std band around the mean
 linewidth: 1.5
 
-# Khung zoom mặc định cho mọi panel (mỗi panel có thể ghi đè bằng khóa `inset:` riêng).
+# Default zoom inset for all panels (a panel can override it with its own `inset:`).
 inset:
   enabled: true
-  xlim: [25, 200]                       # đoạn epoch được phóng to
-  ylim: null                            # null = tự suy ra từ dữ liệu trong xlim; hoặc [0, 0.03]
-  rect: [0.33, 0.25, 0.62, 0.52]        # [x0, y0, rộng, cao] theo tỉ lệ trục chính
-  connectors: [2, 4]                    # 2 góc nối khung gốc -> khung zoom (1..4 như mark_inset); [] = không nối
+  xlim: [25, 200]                       # epoch range to magnify
+  ylim: null                            # null = inferred from the data in xlim; or e.g. [0, 0.03]
+  rect: [0.33, 0.25, 0.62, 0.52]        # [x0, y0, width, height] in main-axes fractions
+  connectors: [2, 4]                    # corners linking box to inset (1..4, as in mark_inset); [] = none
 
 panels:
-  - dataset: clean1                # đổi thành clean1 khi đã có run
+  - dataset: clean1
     title: Error loss for Clean1
     legend_loc: upper right
     strategies:
@@ -40,6 +41,6 @@ panels:
       - {id: ddcl_density,    label: Curriculum Learning - Density, color: "#1f77b4", linestyle: solid}
       - {id: ddcl_point,      label: Curriculum Learning - Point,   color: "#ff7f0e", linestyle: solid}
       - {id: no_curriculum,   label: No Curriculum,                 color: "#2ca02c", linestyle: dashed}
-    # inset:                            # ví dụ ghi đè riêng cho panel này
+    # inset:                            # example: per-panel override
     #   xlim: [25, 200]
     #   ylim: [0.003, 0.031]
